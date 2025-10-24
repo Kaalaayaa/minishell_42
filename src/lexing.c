@@ -82,7 +82,7 @@ t_token	*lexer(char *input)
 	}
 	return (tokens);
 }
-
+/*
 int	main(void)
 {
 	t_token *ret;
@@ -101,4 +101,4 @@ int	main(void)
 		free(line);
 	}
 	return (0);
-}
+}/*/
