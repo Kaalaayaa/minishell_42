@@ -69,6 +69,7 @@ t_token *expander(t_token *tokens, t_shell *shell)
     }
     return (ret);
 }
+
 int main(int argc, char **argv, char **envp)
 {
     (void)argc;
@@ -102,10 +103,8 @@ int main(int argc, char **argv, char **envp)
 		tokens = lexer(line);
         tokens = expander(tokens, &shell);
 		root = parse_e(&tokens);
-		print_tree(root, 0);
-        
+		//print_tree(root, 0);
         exec_tree(root, &shell);
-			
         free(line);
     }
     return (0);

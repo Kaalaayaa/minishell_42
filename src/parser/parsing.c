@@ -22,15 +22,7 @@
  * <redirection> 	-> ('>' | '<' | '>>' | '<<') <WORD>
  */
 
-t_token	*scan_token(t_token *token)
-{
-	t_token	*next;
-
-	if (!token || !token->next)
-		return (NULL);
-	next = token->next;
-	return (next);
-}
+//t_redir *add_redir_node(void);
 
 t_tree	*add_tree_node(char *dst, t_type s)
 {
@@ -41,8 +33,10 @@ t_tree	*add_tree_node(char *dst, t_type s)
 	tree->type = s;
 	tree->left = NULL;
 	tree->right = NULL;
+	tree->redirections = NULL;
 	return (tree);
 }
+
 
 char	**parse_simple_command(t_token *tokens)
 {
@@ -67,8 +61,9 @@ char	**parse_simple_command(t_token *tokens)
 		i++;
 		tokens = tokens->next;
 	}
-	
+
 	argv[i] = NULL;
+
 	return (argv);
 }
 
@@ -77,6 +72,7 @@ t_tree	*init_tree(t_type s)
 	t_tree	*ret;
 
 	ret = malloc(sizeof(t_tree));
+	ret->redirections = NULL;
 	ret->type = s;
 	ret->argv = NULL;
 	ret->token = NULL;
@@ -93,6 +89,7 @@ t_tree	*parse_e(t_token **tokens)
 
 	left = init_tree(WORD);
 	left->argv = parse_simple_command(*tokens);
+	left->redirections = apply_redirections(left->argv);
 	while (*tokens && (*tokens)->type == WORD)
 		*tokens = (*tokens)->next;
 	while (*tokens && (*tokens)->type == PIPE)
@@ -100,6 +97,7 @@ t_tree	*parse_e(t_token **tokens)
 		*tokens = (*tokens)->next;
 		right = init_tree(WORD);
 		right->argv = parse_simple_command(*tokens);
+		right->redirections = apply_redirections(right->argv);
 		pipe_node = add_tree_node("|", PIPE);
 		pipe_node->right = right;
 		pipe_node->left = left;

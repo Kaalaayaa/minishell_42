@@ -12,6 +12,7 @@ bool is_builtin(const char *cmd)
 }
 void execute_builtin(char **cmd, t_shell *shell)
 {
+
     if(ft_strcmp(cmd[0], "echo") == 0)
         builtin_echo(cmd);
     else if(ft_strcmp(cmd[0], "cd") == 0)
@@ -26,4 +27,5 @@ void execute_builtin(char **cmd, t_shell *shell)
         builtin_unset(cmd, shell);
     else if(ft_strcmp(cmd[0], "env") == 0)
         builtin_env(shell);
+
 }

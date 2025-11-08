@@ -44,6 +44,7 @@ int	word_handle(const char *s, t_token **token)
 		else
 			i++;
 	}
+	
 	d = malloc(sizeof(char) * (i + 1));
 	ft_strlcpy(d, s, i);
 	add_token(token, WORD, d);
@@ -58,6 +59,8 @@ char	*adjust_input(char *i, t_token **tokens, enum e_type type, char *s)
 	return (i);
 }
 
+
+
 t_token	*lexer(char *input)
 {
 	t_token	*tokens;
@@ -70,16 +73,17 @@ t_token	*lexer(char *input)
 		else if (*input == '|')
 			input = adjust_input(input, &tokens, PIPE, "|");
 		else if (*input == '>' && *(input + 1) == '>')
-			input = adjust_input(input, &tokens, DGREAT, ">>");
+			input = adjust_input(input, &tokens, WORD, ">>");
 		else if (*input == '>')
-			input = adjust_input(input, &tokens, GREAT, ">");
+			input = adjust_input(input, &tokens, WORD, ">");
 		else if (*input == '<' && *(input + 1) == '<')
-			input = adjust_input(input, &tokens, DLESS, "<<");
+			input = adjust_input(input, &tokens, WORD, "<<");
 		else if (*input == '<')
-			input = adjust_input(input, &tokens, LESS, "<");
+			input = adjust_input(input, &tokens, WORD, "<");
 		else
 			input += word_handle(input, &tokens);
 	}
+	
 	return (tokens);
 }
 /*

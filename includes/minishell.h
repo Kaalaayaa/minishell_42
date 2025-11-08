@@ -29,6 +29,7 @@
 # include <stdbool.h>
 # include <limits.h>
 # include <termios.h>
+# include <fcntl.h>
 
 extern volatile sig_atomic_t g_signal_status;
 
@@ -41,10 +42,10 @@ typedef enum e_type
 {
 	WORD,
 	PIPE,
-	GREAT,
-	DGREAT,
-	LESS,
-	DLESS,
+	REDIR_IN,
+	REDIR_OUT,
+	REDIR_APPEND,
+	REDIR_HEREDOC,
 	END
 }			t_type;
 
@@ -59,9 +60,17 @@ typedef struct s_token
 	struct s_token	*next;
 }			t_token;
 
+typedef struct s_redir
+{
+	t_type	type;
+	char *filename;
+	struct s_redir *next;
+}	t_redir;
+
 typedef struct s_tree
 {
 	t_type			type;
+	t_redir			*redirections;
 	char			*token;
 	char			**argv;
 	struct s_tree	*right;
@@ -97,6 +106,7 @@ int			is_operator_start(char c);
 
 void		print_tree(t_tree *node, int depth);
 t_tree		*parse_e(t_token **tokens);
+t_redir *apply_redirections(char **argv);
 
 /* ************************** */
 /*           BUILTINS          */
@@ -123,6 +133,7 @@ char		*env_to_str(t_env *env);
 void		ft_sort_str_tab(char **tab);
 int			env_size(t_env *env);
 char		*get_env_value(t_env *env, const char *key);
+void	redir_heredoc(char *file);
 /* ************************** */
 /*        ENV                 */
 /* ************************** */

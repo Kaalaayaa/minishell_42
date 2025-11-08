@@ -10,7 +10,7 @@ SRCS = src/main.c  src/lexer/lexing.c src/lexer/lexer_utils.c \
 	   src/builtins/pwd.c src/builtins/unset.c \
 	   src/env/env.c src/env/update_shlvl.c \
 	   src/signals/signal.c src/utils/shell_init.c \
-	   src/utils/utils.c src/execution/exec.c src/execution/exec_utils.c
+	   src/utils/utils.c src/execution/exec.c src/execution/exec_utils.c \ src/execution/redirection.c
 
 
 # Object files
