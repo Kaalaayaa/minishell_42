@@ -39,7 +39,12 @@ int	builtin_cd(char **argv, t_shell *shell)
 	int		print_path;
 
 	print_path = 0;
-    //save current directory in oldcwd
+	if (argv[2])
+	{
+		print_error(" too many arguments\n", NULL, NULL);
+		return (0);
+	}
+		//save current directory in oldcwd
 	if (getcwd(oldcwd, sizeof(oldcwd)) == NULL)
 		oldcwd[0] = '\0';
     //handle cd or cd ~ 

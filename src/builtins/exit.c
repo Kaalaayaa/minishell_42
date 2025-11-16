@@ -56,16 +56,16 @@ int	builtin_exit(char **argv, t_shell *shell)
     //handle error too many args
 	if (argv[2] && is_valid_exit_nbr(argv[1]))
 	{
-		printf("exit: too many arguments\n");
+		print_error(" too many arguments\n", NULL, NULL);
 		shell->exit_status = 1;
 		return (1);
 	}
     //handle error non numeric argument and exit with status 255
 	if (!is_valid_exit_nbr(argv[1]))
 	{
-		printf("exit: %s: numeric argument required\n", argv[1]);
-		shell->exit_status = 255;
-		exit(255);
+		print_error(" numeric argument required\n", NULL, NULL);
+		shell->exit_status = 2;
+		exit(2);
 	}
     // get exit status from second arg and exit
 	exit_status = get_exit_status(argv[1]);

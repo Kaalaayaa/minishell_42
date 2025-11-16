@@ -24,13 +24,14 @@
 # include <stdio.h>
 # include <stdlib.h>
 # include <sys/wait.h>
+# include <sys/stat.h>
 # include <time.h>
 # include <unistd.h>
 # include <stdbool.h>
 # include <limits.h>
 # include <termios.h>
 # include <fcntl.h>
-
+# include <errno.h> // for errno in strerror in redirections. not sure if this is allowed though
 extern volatile sig_atomic_t g_signal_status;
 
 
@@ -87,6 +88,7 @@ typedef struct s_env
 typedef struct s_shell
 {
 	t_env			*env_list;
+	bool			in_pipe;
 	int				exit_status;
 }			t_shell;
 
@@ -95,9 +97,9 @@ typedef struct s_shell
 /*         REDIRECTION        */
 /* ************************** */
 
-void	redir_output(char *filename);
-void	redir_append(char *filename);
-void	redir_input(char *filename);
+int	redir_output(char *filename, t_shell *shell);
+int	redir_append(char *filename, t_shell *shell);
+int	redir_input(char *filename, t_shell *shell);
 t_redir *apply_redirections(char **argv, t_shell *shell);
 
 void	shell_init(t_shell *shell, char **envp);
@@ -142,6 +144,7 @@ int		builtin_exit(char **argv, t_shell *shell);
 int		builtin_export(char **argv, t_shell *shell);
 int		builtin_unset(char **argv, t_shell *shell);
 int		builtin_cd(char **argv, t_shell *shell);
+void	print_error(char *s1, char *s2, char *s3);
 
 /* ************************** */
 /*         ENVIRONMENT          */

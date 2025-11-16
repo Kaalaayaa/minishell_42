@@ -47,7 +47,7 @@ static int	handle_env_var(char *arg, t_shell *shell)
 	}
 	if (!is_valid_identifier(key))
 	{
-		printf("export: `%s': not a valid identifier\n", arg);
+		print_error(" not a valid identifier\n", NULL, NULL);
 		free(key);
 		return (1);
 	}
