@@ -37,12 +37,16 @@ int main(int argc, char **argv, char **envp)
         if (line[0] != '\0')
             add_history(line);
         
+        if (g_signal_status == 1)
+		{
+			shell.exit_status = 130;
+			g_signal_status = 0;
+		}
+        
 		tokens = lexer(line);
         tokens = expander(tokens, &shell);
 		root = parse_e(&tokens, &shell);
 		
-		/* If signal interrupted parsing (e.g., Ctrl-C in heredoc),
-		   set exit status and skip execution */
 		if (g_signal_status == 1)
 		{
 			shell.exit_status = 130;
@@ -51,7 +55,6 @@ int main(int argc, char **argv, char **envp)
 			continue;
 		}
 		
-		print_tree(root, 0);
         exec_tree(root, &shell);
         free(line);
     }

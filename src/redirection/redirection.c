@@ -97,10 +97,12 @@ char	*get_heredoc(char *file, t_shell *shell)
 		if (WIFEXITED(status))
 		{
 			shell->exit_status = WEXITSTATUS(status);
+			//printf("DEBUG: setting exit_status from heredoc44: %d\n", shell->exit_status);
 			if (shell->exit_status == 130)
 				g_signal_status = 1;
 		} else if (WIFSIGNALED(status)) 
 		{
+			//printf("DEBUG: setting exit_status from heredoc44: %d\n", shell->exit_status);
 			shell->exit_status = 128 + WTERMSIG(status);
 		}
 	

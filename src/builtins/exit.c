@@ -49,7 +49,6 @@ int	builtin_exit(char **argv, t_shell *shell)
 {
 	int	exit_status;
 
-	printf("DEBUG: setting exit_status from heredoc77: %d\n", 130);
 	exit_status = shell->exit_status;
     // if no second arg exit with last exit_status
 	if (!argv[1])

@@ -28,7 +28,6 @@ int	change_directory(char *target, char *oldcwd, t_shell *shell, int print_path)
 		if (print_path)
 			printf("%s\n", newcwd);
 	}
-	printf("DEBUG: setting exit_status from heredoc88: %d\n", 130);
 	shell->exit_status = 0;
 	return (0);
 }

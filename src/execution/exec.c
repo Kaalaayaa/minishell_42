@@ -21,7 +21,7 @@ void	exec_pipe(t_tree *tree, t_shell *shell)
 		close(fd[0]);
 		close(fd[1]);
 		exec_tree(tree->left, shell);
-		exit(0);
+		exit(shell->exit_status);
 	}
 	right_pid = fork();
 	if (right_pid == 0)
@@ -31,7 +31,7 @@ void	exec_pipe(t_tree *tree, t_shell *shell)
 		close(fd[0]);
 		close(fd[1]);
 		exec_tree(tree->right, shell);
-		exit(0);
+		exit(shell->exit_status);
 	}
 	close(fd[0]);
 	close(fd[1]);
@@ -81,12 +81,13 @@ void	exec_cmd(t_tree *tree, t_shell *shell)
 			setup_signals_prompt();
 			if (WIFEXITED(status))
 			{// killed normally 
-				printf("DEBUG: setting exit_status from heredoc22: %d\n", 130);
 				shell->exit_status = WEXITSTATUS(status);
+				//printf("DEBUG: setting exit_status from exec22: %d\n", shell->exit_status);
 			}
 			else if (WIFSIGNALED(status)) // killed by signal
 			{
-				int	sig = WTERMSIG(status); // get signal number
+				int	sig = WTERMSIG(status);
+				//printf("DEBUG: setting exit_status from heredoc33: %d\n", 130);// get signal number
 				shell->exit_status = 128 + sig;
 				if (sig == SIGQUIT)
 					printf("Quit (core dumped)\n");
