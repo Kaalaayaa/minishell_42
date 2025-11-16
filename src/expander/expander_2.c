@@ -39,6 +39,11 @@ static size_t	handle_env(const char *s, size_t i, t_shell *sh, char **res)
 	j = i + 1;
 	while (s[j] && (ft_isalnum(s[j]) || s[j] == '_'))
 		j++;
+	if (j == i + 1)
+	{
+		append_and_free(res, "$");
+		return (i + 1);
+	}
 	name = ft_substr(s, i + 1, j - i - 1);
 	value = get_env_value(sh->env_list, name);
 	append_env_value(res, value);
