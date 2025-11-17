@@ -35,14 +35,12 @@ void	exec_pipe(t_tree *tree, t_shell *shell)
 	}
 	close(fd[0]);
 	close(fd[1]);
-	//setup_signals_parent();
 	waitpid(left_pid, NULL, 0);
 	waitpid(right_pid, &status, 0);
 	if (WIFEXITED(status))
 		shell->exit_status = WEXITSTATUS(status);	
 	else if (WIFSIGNALED(status))
 		shell->exit_status = 128 + WTERMSIG(status);
-	//setup_signals_prompt();
 	shell->in_pipe = false;
 }
 

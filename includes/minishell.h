@@ -101,7 +101,7 @@ int	redir_output(char *filename, t_shell *shell);
 int	redir_append(char *filename, t_shell *shell);
 int	redir_input(char *filename, t_shell *shell);
 t_redir *apply_redirections(char **argv, t_shell *shell);
-
+int is_redirection(char *argv);
 void	shell_init(t_shell *shell, char **envp);
 
 /* ************************** */
@@ -119,6 +119,7 @@ size_t	ft_strlicpy(char *dest, const char *src, size_t size);
 
 t_tree	*parse_e(t_token **tokens, t_shell *shell);
 void	print_tree(t_tree *node, int depth);
+t_token *syntax(t_token *tokens, t_shell *shell);
 
 /* ************************** */
 /*         EXPANDER            */

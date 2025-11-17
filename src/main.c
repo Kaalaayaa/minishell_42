@@ -12,6 +12,7 @@
 
 #include "minishell.h"
 
+void    check_syntax(t_tree *tree);
 
 int main(int argc, char **argv, char **envp)
 {
@@ -45,6 +46,7 @@ int main(int argc, char **argv, char **envp)
         
 		tokens = lexer(line);
         tokens = expander(tokens, &shell);
+        tokens = syntax(tokens, &shell);
 		root = parse_e(&tokens, &shell);
 		if (g_signal_status == 1)
 		{
@@ -58,4 +60,31 @@ int main(int argc, char **argv, char **envp)
         free(line);
     }
     return (0);
+}
+
+void check_syntax(t_tree *tree)
+{
+    if (!tree)
+        return;
+
+    if (!tree->argv && tree->redirections)
+    {
+        fprintf(stderr, "minishell: syntax error near unexpected token `newline'\n");
+        return;
+    }
+    if (tree->type == PIPE)
+    {
+        if (!tree->left || (!tree->left->argv && !tree->left->redirections))
+        {
+            fprintf(stderr, "minishell: syntax error near unexpected token `|'\n");
+            return;
+        }
+        if (!tree->right || (!tree->right->argv && !tree->right->redirections))
+        {
+            fprintf(stderr, "minishell: syntax error near unexpected token `newline'\n");
+            return;
+        }
+    }
+    check_syntax(tree->left);
+    check_syntax(tree->right);
 }
