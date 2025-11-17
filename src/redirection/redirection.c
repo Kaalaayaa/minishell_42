@@ -30,6 +30,9 @@ void    delete_line(char **argv, int index)
 
 int is_redirection(char *argv)
 {
+	if (!argv || !argv[0])
+		return (0);	
+	
     if (ft_strcmp(argv, ">") == 0)
         return (1);
     else if (ft_strcmp(argv, ">>") == 0)
@@ -143,13 +146,14 @@ t_redir *apply_redirections(char **argv, t_shell *shell)
     t_redir *head;
     int i;
 
-    if (!argv)
-        return NULL;
+    if (!argv || !argv[0])
+	{	return (NULL);
+	}
     ret = add_redir_node();
     head = ret;
     i = 0;
     while(argv[i])
-    {
+    {	
         if (is_redirection(argv[i]) && argv[i + 1])
         {
             alot_redirection(&ret, argv, i, shell);
@@ -158,6 +162,7 @@ t_redir *apply_redirections(char **argv, t_shell *shell)
             i -= 2;
         }
         i++;
+
     }
     return (head);
 }

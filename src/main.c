@@ -46,7 +46,6 @@ int main(int argc, char **argv, char **envp)
 		tokens = lexer(line);
         tokens = expander(tokens, &shell);
 		root = parse_e(&tokens, &shell);
-		
 		if (g_signal_status == 1)
 		{
 			shell.exit_status = 130;
@@ -54,7 +53,7 @@ int main(int argc, char **argv, char **envp)
 			free(line);
 			continue;
 		}
-		
+		//print_tree(root, 0);
         exec_tree(root, &shell);
         free(line);
     }

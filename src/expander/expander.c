@@ -46,6 +46,12 @@ t_token	*expander(t_token *tokens, t_shell *shell)
 	head = tokens;
 	while (tokens)
 	{
+		if (tokens->token && ft_strcmp(tokens->token, "$EMPTY") == 0)
+		{
+				tokens = tokens->next;
+				if (tokens == NULL)
+					break;
+		}	
 		if (tokens->token && ft_strchr(tokens->token, '$'))
 		{
 			old = tokens->token;

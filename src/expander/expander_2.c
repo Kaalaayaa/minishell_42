@@ -35,7 +35,7 @@ static size_t	handle_env(const char *s, size_t i, t_shell *sh, char **res)
 	char	*value;
 
 	if (s[i + 1] == '?')
-		return (i + env_exit_status(sh, res));
+		return (i + env_exit_status(sh, res));		
 	j = i + 1;
 	while (s[j] && (ft_isalnum(s[j]) || s[j] == '_'))
 		j++;
@@ -52,12 +52,28 @@ static size_t	copy_plain_text(const char *s, size_t i, char **res)
 	char	*part;
 
 	j = i;
-	while (s[j] && s[j] != '$' && s[j] != '\'')
+	while (s[j] && s[j] != '\'')
+	{
+		if (s[j] == '$')
+		{
+			if (s[j + 1] == '"' || s[j + 1] == ' ' || s[j + 1] == '\t')
+				    j++;
+			else
+                break;
+		}
 		j++;
+	}
 	part = ft_substr(s, i, j - i);
 	append_and_free(res, part);
 	free(part);
 	return (j);
+}
+
+static int handle_single_sign(size_t i, char **res)
+{
+	append_and_free(res, "$");
+	i = i + 1;
+	return (i);
 }
 
 char	*expand_env(const char *str, t_shell *shell)
@@ -73,6 +89,8 @@ char	*expand_env(const char *str, t_shell *shell)
 	{
 		if (str[i] == '\'')
 			i = handle_single_quote(str, i, &res);
+		else if (str[i] == '$' && !str[i + 1])
+			i = handle_single_sign(str[i], &res);
 		else if (str[i] == '$')
 			i = handle_env(str, i, shell, &res);
 		else

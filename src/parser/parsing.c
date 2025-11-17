@@ -37,7 +37,6 @@ t_tree	*add_tree_node(char *dst, t_type s)
 	return (tree);
 }
 
-
 char	**parse_simple_command(t_token *tokens)
 {
 	t_token	*tmp;
@@ -48,22 +47,31 @@ char	**parse_simple_command(t_token *tokens)
 	tmp = tokens;
 	while (tmp && tmp->type == WORD)
 	{
-		tmp = tmp->next;
+			if (ft_strcmp(tmp->token, "$EMPTY") == 0)
+			{
+				tmp = tmp->next;
+				if (tmp == NULL)
+					break;
+			}
+			tmp = tmp->next;
 		i++;
 	}
 	argv = malloc(sizeof(char *) * (i + 1));
 	i = 0;
-	
 	while (tokens && tokens->type == WORD)
 	{
-		
-		argv[i] = ft_strdup(tokens->token);
-		i++;
-		tokens = tokens->next;
+		if (ft_strcmp(tokens->token, "$EMPTY") == 0)
+		{
+			tokens = tokens->next;
+			if (tokens == NULL)
+				break;
+		}
+				argv[i] = ft_strdup(tokens->token);
+			i++;
+		if (tokens != NULL)
+			tokens = tokens->next;
 	}
-
 	argv[i] = NULL;
-
 	return (argv);
 }
 

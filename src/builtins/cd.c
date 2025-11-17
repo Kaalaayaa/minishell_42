@@ -42,6 +42,7 @@ int	builtin_cd(char **argv, t_shell *shell)
 	if (argv[2])
 	{
 		print_error(" too many arguments\n", NULL, NULL);
+		shell->exit_status = 1;
 		return (0);
 	}
 		//save current directory in oldcwd
