@@ -36,7 +36,12 @@ int	word_handle(const char *s, t_token **token)
 		{
 			qoute = s[i++];
 			while (s[i] && s[i] != qoute)
+			{
+				//Skip escaped characters inside double quotes
+				if (qoute == '"' && s[i] == '\\' && s[i + 1])
+					i++;
 				i++;
+			}
 			if (s[i] == '\0')
 				return (i); // incase of misaligned qoutes;
 			i++;

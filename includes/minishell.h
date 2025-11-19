@@ -6,7 +6,7 @@
 /*   By: kchatela <kchatela@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/21 09:34:36 by pdangwal          #+#    #+#             */
-/*   Updated: 2025/11/12 17:43:35 by kchatela         ###   ########.fr       */
+/*   Updated: 2025/11/19 17:20:16 by kchatela         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -140,7 +140,7 @@ char	*ft_strjoin_free(char *s1, char *s2, int flag);
 /* ************************** */
 
 bool	is_builtin(const char *cmd);
-void	execute_builtin(char **cmd, t_shell *shell);
+int		execute_builtin(char **cmd, t_shell *shell);
 int		builtin_echo(char **argv);
 int		builtin_pwd(void);
 int		builtin_env(t_shell *shell);
@@ -188,7 +188,5 @@ void	free_split(char **argv, int order);
 void    cleanup(t_token *tokens, t_tree *tree, t_shell *shell);
 void    free_redir(t_redir *redir);
 void    free_tokens(t_token *tokens);
-
-int		ft_strcmp(const char *s1, const char *s2);// TO ADD TO LIBFT
 
 #endif

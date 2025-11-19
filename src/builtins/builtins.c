@@ -10,22 +10,24 @@ bool is_builtin(const char *cmd)
     else
         return 0;
 }
-void execute_builtin(char **cmd, t_shell *shell)
+int execute_builtin(char **cmd, t_shell *shell)
 {
+    int exit_status;
 
+    exit_status = 0;
     if(ft_strcmp(cmd[0], "echo") == 0)
-        builtin_echo(cmd);
+        exit_status = builtin_echo(cmd);
     else if(ft_strcmp(cmd[0], "cd") == 0)
-        builtin_cd(cmd, shell);
+        exit_status = builtin_cd(cmd, shell);
     else if(ft_strcmp(cmd[0], "pwd") == 0)
-        builtin_pwd();
+        exit_status = builtin_pwd();
     else if(ft_strcmp(cmd[0], "exit") == 0)
-        builtin_exit(cmd, shell);
+        exit_status = builtin_exit(cmd, shell);
     else if(ft_strcmp(cmd[0], "export") == 0)
-        builtin_export(cmd, shell);
+        exit_status = builtin_export(cmd, shell);
     else if(ft_strcmp(cmd[0], "unset") == 0)
-        builtin_unset(cmd, shell);
+        exit_status = builtin_unset(cmd, shell);
     else if(ft_strcmp(cmd[0], "env") == 0)
-        builtin_env(shell);
-
+        exit_status = builtin_env(shell);
+    return (exit_status);
 }

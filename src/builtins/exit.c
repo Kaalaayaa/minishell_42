@@ -50,24 +50,18 @@ int	builtin_exit(char **argv, t_shell *shell)
 	int	exit_status;
 
 	exit_status = shell->exit_status;
-    // if no second arg exit with last exit_status
 	if (!argv[1])
 		exit(exit_status);
-    //handle error too many args
-	if (argv[2] && is_valid_exit_nbr(argv[1]))
+	if (argv[2])
 	{
-		print_error(" too many arguments\n", NULL, NULL);
-		shell->exit_status = 1;
+		print_error("minishell: exit: ", "too many arguments\n", NULL);
 		return (1);
 	}
-    //handle error non numeric argument and exit with status 255
 	if (!is_valid_exit_nbr(argv[1]))
 	{
-		print_error(" numeric argument required\n", NULL, NULL);
-		shell->exit_status = 2;
+		print_error("minishell: exit: ", "numeric argument required\n", NULL);
 		exit(2);
 	}
-    // get exit status from second arg and exit
 	exit_status = get_exit_status(argv[1]);
 	exit(exit_status);
 }

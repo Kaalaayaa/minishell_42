@@ -26,6 +26,13 @@ static char	*remove_quotes(char *str)
 	in_quote = 0;
 	while (str[i])
 	{
+		if (in_quote == '"' && str[i] == '\\' && str[i + 1])
+		{
+			i++;
+			res[j++] = str[i];
+			i++;
+			continue;
+		}
 		update_quote(str[i], &in_quote);
 		if (!((str[i] == '\'' || str[i] == '"') && (in_quote == 0 || in_quote == str[i])))
 			res[j++] = str[i];

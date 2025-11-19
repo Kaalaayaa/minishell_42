@@ -45,6 +45,5 @@ int	builtin_unset(char **argv, t_shell *shell)
 			remove_env_node(&shell->env_list, argv[i]);
 		i++;
 	}
-	shell->exit_status = exit_status;
 	return (exit_status);
 }

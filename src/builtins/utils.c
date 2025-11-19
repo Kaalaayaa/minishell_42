@@ -1,19 +1,5 @@
 #include "minishell.h"
 
-int ft_strcmp(const char *s1, const char *s2)
-{
-    size_t i = 0;
-    if (!s1 || !s2)
-        return (s1 - s2);
-    while (s1[i] && s2[i])
-    {
-        if (s1[i] != s2[i])
-            return (s1[i] - s2[i]);
-        i++;
-    }
-    return (s1[i] - s2[i]);
-}
-
 int	is_valid_identifier(char *key)
 {
 	int	i;
@@ -64,4 +50,34 @@ void	add_or_update_env(t_env **env, char *key, char *value)
 
 	node->next = *env;
 	*env = node;
+}
+
+static void swap_strings(char **s1, char **s2)
+{
+    char *tmp;
+
+    tmp = *s1;
+    *s1 = *s2;
+    *s2 = tmp;
+}
+
+void ft_sort_str_tab(char **tab)
+{
+    int i;
+    int j;
+
+    if (!tab)
+        return;
+    i = 0;
+    while (tab[i])
+    {
+        j = i + 1;
+        while (tab[j])
+        {
+            if (ft_strcmp(tab[i], tab[j]) > 0)
+                swap_strings(&tab[i], &tab[j]);
+            j++;
+        }
+        i++;
+    }
 }

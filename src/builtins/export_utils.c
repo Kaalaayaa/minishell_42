@@ -40,36 +40,6 @@ char *ft_strjoin_three(char *s1, char *s2, char *s3)
     return (res);
 }
 
-static void swap_strings(char **s1, char **s2)
-{
-    char *tmp;
-
-    tmp = *s1;
-    *s1 = *s2;
-    *s2 = tmp;
-}
-
-void ft_sort_str_tab(char **tab)
-{
-    int i;
-    int j;
-
-    if (!tab)
-        return;
-    i = 0;
-    while (tab[i])
-    {
-        j = i + 1;
-        while (tab[j])
-        {
-            if (ft_strcmp(tab[i], tab[j]) > 0)
-                swap_strings(&tab[i], &tab[j]);
-            j++;
-        }
-        i++;
-    }
-}
-
 int env_size(t_env *env)
 {
     int i;

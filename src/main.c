@@ -6,7 +6,7 @@
 /*   By: kchatela <kchatela@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/24 15:19:27 by pdangwal          #+#    #+#             */
-/*   Updated: 2025/11/12 18:38:07 by kchatela         ###   ########.fr       */
+/*   Updated: 2025/11/19 17:49:12 by kchatela         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,8 @@ int main(int argc, char **argv, char **envp)
         
 		//print_tree(root, 0);
         exec_tree(root, &shell);
-        cleanup(tokens, root, &shell);
+        //cleanup(tokens, root, &shell);
+        cleanup(tokens, root, NULL);
         free(line);
     }
     rl_clear_history();

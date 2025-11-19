@@ -47,7 +47,7 @@ static int	handle_env_var(char *arg, t_shell *shell)
 	}
 	if (!is_valid_identifier(key))
 	{
-		print_error(" not a valid identifier\n", NULL, NULL);
+		print_error("minishell: export: `", key, "': not a valid identifier\n");
 		free(key);
 		return (1);
 	}
@@ -71,6 +71,5 @@ int	builtin_export(char **argv, t_shell *shell)
 			exit_status = 1;
 		i++;
 	}
-	shell->exit_status = exit_status;
 	return (exit_status);
 }

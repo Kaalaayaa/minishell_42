@@ -195,7 +195,7 @@ static int	run_parent_builtin(t_tree *tree, t_shell *shell)
 		return (0);
 	if (shell->in_pipe)
 		return (0);
-	execute_builtin(tree->argv, shell);
+	shell->exit_status = execute_builtin(tree->argv, shell);
 	return (1);
 }
 
