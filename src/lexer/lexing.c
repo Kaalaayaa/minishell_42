@@ -6,10 +6,10 @@ void	add_token(t_token **tokens, enum e_type type, char *s)
 	t_token	*new;
 	t_token	*tmp;
 
-	new = malloc(sizeof(t_token));
+	new = malloc(sizeof(*new));
 	if (!new)
 		return ;
-	new->token = ft_strdup(s);
+	new->token = s;
 	new->type = type;
 	new->next = NULL;
 	if (*tokens == NULL)
@@ -26,7 +26,7 @@ void	add_token(t_token **tokens, enum e_type type, char *s)
 int	word_handle(const char *s, t_token **token)
 {
 	int		i;
-	char	*d;
+	//char	*d;
 	char	qoute;
 
 	i = 0;
@@ -44,15 +44,14 @@ int	word_handle(const char *s, t_token **token)
 		else
 			i++;
 	}
-	d = malloc(sizeof(char) * (i + 1));
-	ft_strlicpy(d, s, i);
-	add_token(token, WORD, d);
+	//d = ft_strndup(s, i);
+	add_token(token, WORD, ft_strndup(s, i));
 	return (i);
 }
 
 char	*adjust_input(char *i, t_token **tokens, enum e_type type, char *s)
 {
-	add_token(tokens, type, s);
+	add_token(tokens, type, ft_strdup(s));
 	i += ft_strlen(s);
 	return (i);
 }

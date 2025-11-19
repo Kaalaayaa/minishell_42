@@ -76,13 +76,13 @@ char	*get_path(char *argv, t_shell *shell)
 		free(tmp);
 		if (access(fullpath, X_OK) == 0)
 		{
-			//might have to free the split here;
+			free_split(paths, 0);
 			return (fullpath);
 		}
 		free(fullpath);
 		i++;
 	}
-	//ft_freesplit() here too;
+	free_split(paths, 0);
 	return (NULL);
 	
 }

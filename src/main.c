@@ -12,8 +12,6 @@
 
 #include "minishell.h"
 
-void    check_syntax(t_tree *tree);
-
 int main(int argc, char **argv, char **envp)
 {
     (void)argc;
@@ -32,6 +30,7 @@ int main(int argc, char **argv, char **envp)
         line = readline("minishell% ");
         if(!line)
         {
+            cleanup(NULL, NULL, &shell);
             printf("exit\n");
             break ;
         }
@@ -52,39 +51,16 @@ int main(int argc, char **argv, char **envp)
 		{
 			shell.exit_status = 130;
 			g_signal_status = 0;
-			free(line);
+			//free(line);
 			continue;
 		}
+        
 		//print_tree(root, 0);
         exec_tree(root, &shell);
+        cleanup(tokens, root, NULL);
         free(line);
     }
+    rl_clear_history();
     return (0);
 }
 
-void check_syntax(t_tree *tree)
-{
-    if (!tree)
-        return;
-
-    if (!tree->argv && tree->redirections)
-    {
-        fprintf(stderr, "minishell: syntax error near unexpected token `newline'\n");
-        return;
-    }
-    if (tree->type == PIPE)
-    {
-        if (!tree->left || (!tree->left->argv && !tree->left->redirections))
-        {
-            fprintf(stderr, "minishell: syntax error near unexpected token `|'\n");
-            return;
-        }
-        if (!tree->right || (!tree->right->argv && !tree->right->redirections))
-        {
-            fprintf(stderr, "minishell: syntax error near unexpected token `newline'\n");
-            return;
-        }
-    }
-    check_syntax(tree->left);
-    check_syntax(tree->right);
-}

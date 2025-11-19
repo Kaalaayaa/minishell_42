@@ -8,6 +8,8 @@ t_redir *add_redir_node(void)
 	t_redir	*r;
 
 	r = malloc(sizeof(t_redir));
+	if (!r)
+		return (NULL);
 	r->filename = NULL;
 	r->next = NULL;
 	return (r);
@@ -44,9 +46,21 @@ int is_redirection(char *argv)
     return (0);
 }
 
+char *ft_strtrim_free(char *src, const char *set)
+{
+	char *dest;
+
+	if (!src)
+		return (NULL);
+	if (!set)
+		return (src);
+	dest = ft_strtrim(src, set);
+	free(src);	
+	return (dest);
+}
+
 char	*get_heredoc(char *file, t_shell *shell)
 {
-	(void)shell;
 	char	*line;
 	char	*new;
 	int		i;
@@ -66,8 +80,8 @@ char	*get_heredoc(char *file, t_shell *shell)
 
 
 		i = 0;
-    	new = malloc(sizeof(char) + 1);
-   		new[1] = '\0';
+    	new = malloc(sizeof(char) * 1);
+   		new[0] = '\0';
 		while(1)
 		{
 			line = readline("> ");
@@ -78,15 +92,12 @@ char	*get_heredoc(char *file, t_shell *shell)
 				free(line);
 				break;
 			}
-        	new = ft_strjoin(new, ft_strdup("\n"));
-        	new = ft_strjoin(new, ft_strdup(line));
-        
 			i+= ft_strlen(line) + 1;
-        	free(line);
+        	new = ft_strjoin_free(new, "\n", 1);
+        	new = ft_strjoin_free(new, line, 3);
 		}
-    	new = ft_strtrim(new, "\n");
+		new = ft_strtrim_free(new, "\n");
 		write(fd[1], new, ft_strlen(new));
-		free(new);
 		close(fd[1]);
 		exit(0);
 	}
@@ -142,27 +153,40 @@ void    alot_redirection(t_redir **ret, char **argv, int index, t_shell *shell)
 
 t_redir *apply_redirections(char **argv, t_shell *shell)
 {
-    t_redir *ret;
-    t_redir *head;
-    int i;
+    t_redir *ret = NULL;
+    t_redir *head = NULL;
+    t_redir *new_node;
+    int i = 0;
 
-    if (!argv || !argv[0])
-	{	return (NULL);
-	}
-    ret = add_redir_node();
-    head = ret;
-    i = 0;
-    while(argv[i])
-    {	
+    while (argv[i])
+    {
         if (is_redirection(argv[i]) && argv[i + 1])
         {
+            new_node = add_redir_node();
+            if (!new_node)
+            {
+                free_redir(head);
+                return (NULL);
+            }
+
+            if (!ret)
+            {
+                head = new_node;
+                ret = new_node;
+            }
+            else
+            {
+                ret->next = new_node;
+                ret = ret->next;
+            }
+
+            // If alot_redirection fails, free the node
             alot_redirection(&ret, argv, i, shell);
-            ret->next = add_redir_node();
-            ret = ret->next;
-            i -= 2;
+
+            i -= 2; // Adjust index after deleting tokens
         }
         i++;
-
     }
+
     return (head);
 }

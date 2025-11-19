@@ -1,5 +1,28 @@
 #include "../includes/minishell.h"
 
+void verify_path(char *path, t_tree *tree);
+
+void	pipe_end(int *fd, int side, t_tree *tree, t_shell *shell)
+{
+	if (side == 0) //left
+	{
+		setup_signals_child();
+		dup2(fd[1], STDOUT_FILENO);
+		close(fd[0]);
+		close(fd[1]);
+		exec_tree(tree->left, shell);
+		exit(shell->exit_status);
+	}
+	else if (side == 1)
+	{
+		setup_signals_child();
+		dup2(fd[0], STDIN_FILENO);
+		close(fd[0]);
+		close(fd[1]);	
+		exec_tree(tree->right, shell);
+		exit(shell->exit_status);
+	}
+}
 
 void	exec_pipe(t_tree *tree, t_shell *shell)
 {
@@ -15,24 +38,10 @@ void	exec_pipe(t_tree *tree, t_shell *shell)
 		return ;
 	left_pid = fork();
 	if (left_pid == 0)
-	{
-		setup_signals_child();
-		dup2(fd[1], STDOUT_FILENO);
-		close(fd[0]);
-		close(fd[1]);
-		exec_tree(tree->left, shell);
-		exit(shell->exit_status);
-	}
+		pipe_end(fd, 0, tree, shell);
 	right_pid = fork();
 	if (right_pid == 0)
-	{
-		setup_signals_child();
-		dup2(fd[0], STDIN_FILENO);
-		close(fd[0]);
-		close(fd[1]);	
-		exec_tree(tree->right, shell);
-		exit(shell->exit_status);
-	}
+		pipe_end(fd, 1, tree, shell);
 	close(fd[0]);
 	close(fd[1]);
 	waitpid(left_pid, NULL, 0);
@@ -44,134 +53,192 @@ void	exec_pipe(t_tree *tree, t_shell *shell)
 	shell->in_pipe = false;
 }
 
-
-char **get_envp(t_env *env) // change this
+int	env_count(t_env *env)
 {
-    int count = 0;
-    t_env *tmp = env;
-    char **ret;
+	int		count;
+	t_env	*tmp;
 
-    // Count entries
-    while (tmp)
-    {
-        count++;
-        tmp = tmp->next;
-    }
-
-    ret = malloc(sizeof(char *) * (count + 1));
-    if (!ret)
-        return NULL;
-
-    tmp = env;
-    count = 0;
-
-    while (tmp)
-    {
-        size_t len_key = strlen(tmp->key);
-        size_t len_val = strlen(tmp->value);
-
-        ret[count] = malloc(len_key + len_val + 2);  // + '=' + '\0'
-        if (!ret[count])
-            return NULL;
-
-        memcpy(ret[count], tmp->key, len_key);
-        ret[count][len_key] = '=';
-        memcpy(ret[count] + len_key + 1, tmp->value, len_val);
-        ret[count][len_key + len_val + 1] = '\0';
-
-        tmp = tmp->next;
-        count++;
-    }
-
-    ret[count] = NULL;
-    return ret;
+	count = 0;
+	tmp = env;
+	while (tmp)
+	{
+		count++;
+		tmp = tmp->next;
+	}
+	return (count);
 }
 
-void exec_cmd(t_tree *tree, t_shell *shell)
+char	*env_join(char *key, char *value)
 {
-    pid_t   pid;
-    char    *path;
-    int     status;
-    char    **envp;
+	char	*str;
+	int		len_k;
+	int		len_v;
 
-    if (!tree || !tree->argv || !tree->argv[0])
-        return;
-    if (tree->argv[0][0] == '\0')  // e.g. "", $EMPTY, "$EMPTY"
-    {
-        shell->exit_status = 0;
-        return;
-    }
-    if (is_builtin(tree->argv[0]))
-    {
-        if (shell->in_pipe)
-        {
-            pid = fork();
-            if (pid == 0)
-            {
-                setup_signals_child();
-                execute_builtin(tree->argv, shell);
-                exit(shell->exit_status);
-            }
-            waitpid(pid, &status, 0);
-            shell->exit_status = WEXITSTATUS(status);
-        }
-        else
-            execute_builtin(tree->argv, shell);
-        return;
-    }
-    envp = get_envp(shell->env_list);
-    pid = fork();
+	len_k = ft_strlen(key);
+	len_v = ft_strlen(value);
+	str = malloc(len_k + len_v + 2);
+	if (!str)
+		return (NULL);
+	ft_memcpy(str, key, len_k);
+	str[len_k] = '=';
+	ft_memcpy(str + len_k + 1, value, len_v);
+	str[len_k + len_v + 1] = '\0';
+	return (str);
+}
 
-    if (pid == 0)
-    {
-        setup_signals_child();
+char	**get_envp(t_env *env)
+{
+	char	**ret;
+	t_env	*tmp;
+	int		count;
+	int		i;
 
-        path = get_path(tree->argv[0], shell);
-        if (!path)
-        {
-            if (ft_strchr(tree->argv[0], '/'))
-				path = tree->argv[0];
-            else if (!path)
-            {
-                print_error("minishell: ", tree->argv[0], ": command not found\n");
-                exit(127);
-            }
-        }
-        struct stat st;
-        if (stat(path, &st) == 0 && S_ISDIR(st.st_mode))
-        {
-            print_error("minishell: ", tree->argv[0], ": Is a directory\n");
-            exit(126);
-        }
-        execve(path, tree->argv, envp);
-		if (errno == EACCES)
+	count = env_count(env);
+	ret = malloc(sizeof(char *) * (count + 1));
+	if (!ret)
+		return (NULL);
+	tmp = env;
+	i = 0;
+	while (tmp)
+	{
+		ret[i] = env_join(tmp->key, tmp->value);
+		if (!ret[i])
 		{
-    print_error("minishell: ", tree->argv[0], ": Permission denied\n");
-    exit(126);
+			free_split(ret, --i);
+			return (NULL);
 		}
-	else if (errno == ENOENT)
-		{
-		print_error("minishell: ", tree->argv[0], ": No such file or directory\n");
-	 	exit(127);
+		i++;
+		tmp = tmp->next;
 	}
-	else
-		{
-		    print_error("minishell: ", tree->argv[0], ": ");
- 		   print_error(strerror(errno), "\n", NULL);
- 		   exit(127);
-	}
-
-        exit(0); // should never happen
-    }
-    waitpid(pid, &status, 0);
-    if (WIFEXITED(status))
-        shell->exit_status = WEXITSTATUS(status);
-    else if (WIFSIGNALED(status))
-        shell->exit_status = 128 + WTERMSIG(status);
+	ret[i] = NULL;
+	return (ret);
 }
 
 
+void	print_and_exit(char *s1, char *s2, char *s3, int exitcode)
+{
+	print_error(s1, s2, s3);
+	exit(exitcode);
+}
 
+
+void execute_foreign(char **envp, char *path, t_tree *tree)
+{
+    char *execpath;
+
+    verify_path(path, tree);
+
+    execpath = path;
+    if (ft_strchr(tree->argv[0], '/'))
+        execpath = tree->argv[0];
+
+    execve(execpath, tree->argv, envp);
+
+    if (errno == EACCES)
+        print_and_exit("minishell: ", tree->argv[0], ": Permission denied\n", 126);
+    else if (errno == ENOENT)
+        print_and_exit("minishell: ", tree->argv[0], ": No such file or directory\n", 127);
+
+    print_error("minishell: ", tree->argv[0], ": ");
+    print_error(strerror(errno), "\n", NULL);
+    exit(127);
+}
+
+static void	check_slash_path(t_tree *tree)
+{
+	struct stat	st;
+
+	if (stat(tree->argv[0], &st) != 0)
+		print_and_exit("minishell: ", tree->argv[0],
+			": No such file or directory\n", 127);
+	if (S_ISDIR(st.st_mode))
+		print_and_exit("minishell: ", tree->argv[0],
+			": Is a directory\n", 126);
+}
+
+static void	check_normal_path(char *path, t_tree *tree)
+{
+	struct stat	st;
+
+	if (!path)
+		print_and_exit("minishell: ", tree->argv[0],
+			": command not found\n", 127);
+	if (stat(path, &st) == 0)
+	{
+		if (S_ISDIR(st.st_mode))
+			print_and_exit("minishell: ", tree->argv[0],
+				": Is a directory\n", 126);
+	}
+}
+
+void	verify_path(char *path, t_tree *tree)
+{
+	if (ft_strchr(tree->argv[0], '/'))
+	{
+		check_slash_path(tree);
+		return ;
+	}
+	check_normal_path(path, tree);
+}
+void	free_exec_resources(char **envp, char *path)
+{
+	if (envp)
+		free_split(envp, 0);
+	if (path)
+		free(path);
+}
+
+
+static int	run_parent_builtin(t_tree *tree, t_shell *shell)
+{
+	if (!is_builtin(tree->argv[0]))
+		return (0);
+	if (shell->in_pipe)
+		return (0);
+	execute_builtin(tree->argv, shell);
+	return (1);
+}
+
+static void	child_exec(t_tree *tree, t_shell *shell,
+			char **envp, char *path)
+{
+	if (is_builtin(tree->argv[0]))
+	{
+		execute_builtin(tree->argv, shell);
+		exit(shell->exit_status);
+	}
+	execute_foreign(envp, path, tree);
+	exit(127);
+}
+
+static void	update_exit_status(int status, t_shell *shell)
+{
+	if (WIFEXITED(status))
+		shell->exit_status = WEXITSTATUS(status);
+	else if (WIFSIGNALED(status))
+		shell->exit_status = 128 + WTERMSIG(status);
+}
+void	exec_cmd(t_tree *tree, t_shell *shell)
+{
+	pid_t	pid;
+	int		status;
+	char	**envp;
+	char	*path;
+
+	if (!tree || !tree->argv || !tree->argv[0])
+		return ;
+	if (run_parent_builtin(tree, shell))
+		return ;
+	envp = get_envp(shell->env_list);
+	path = get_path(tree->argv[0], shell);
+	pid = fork();
+	if (pid == 0)
+		child_exec(tree, shell, envp, path);
+	waitpid(pid, &status, 0);
+	free_split(envp, 0);
+	free(path);
+	update_exit_status(status, shell);
+}
 
 void	write_lines(char *argv)
 {
@@ -194,25 +261,25 @@ void	write_lines(char *argv)
 	}
 }
 
-int	redir_allocation(t_tree *tree, t_shell *shell)
+int	redir_allocation(t_redir *redirections, t_shell *shell)
 {
-	if (tree->redirections->type == REDIR_APPEND)
+	if (redirections->type == REDIR_APPEND)
 	{
-		if (!redir_append(tree->redirections->filename, shell))
+		if (!redir_append(redirections->filename, shell))
 			return (0);
 	}	
-	else if (tree->redirections->type == REDIR_OUT)
+	else if (redirections->type == REDIR_OUT)
 	{
-		if (!redir_output(tree->redirections->filename, shell))
+		if (!redir_output(redirections->filename, shell))
 			return (0);
 	}
-	else if (tree->redirections->type == REDIR_IN)
+	else if (redirections->type == REDIR_IN)
 	{
-		if (!redir_input(tree->redirections->filename, shell))
+		if (!redir_input(redirections->filename, shell))
 			return (0);
 	}
-	else if (tree->redirections->type == REDIR_HEREDOC)
-		write_lines(tree->redirections->filename);
+	else if (redirections->type == REDIR_HEREDOC)
+		write_lines(redirections->filename);
 	return (1);
 }
 
@@ -221,19 +288,21 @@ void exec_with_redir(t_tree *tree, t_shell *shell)
 	int		outfd;
 	int		infd;
 	int		res;
+	t_redir *redir;
 
+	redir = tree->redirections;
 	res = 1;
 	outfd = dup(STDOUT_FILENO);
 	infd = dup(STDIN_FILENO);
-	while(tree->redirections && tree->redirections->filename && tree->redirections->type)
+	while(redir && redir->filename && redir->type)
 	{
-			if (!redir_allocation(tree, shell))
+			if (!redir_allocation(redir, shell))
 			{
 				res = 0;
 				shell->exit_status = 1;
 				break;
 			}
-			tree->redirections = tree->redirections->next;
+			redir = redir->next;
 	}
 		if (res)
 			exec_cmd(tree, shell);
@@ -244,6 +313,7 @@ void exec_with_redir(t_tree *tree, t_shell *shell)
 }
 void	exec_tree(t_tree *tree, t_shell *shell)
 {
+
 	if (!tree)
 		return ;
 	if (tree->type == PIPE)

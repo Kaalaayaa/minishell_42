@@ -32,7 +32,6 @@ static char	*remove_quotes(char *str)
 		i++;
 	}
 	res[j] = '\0';
-	free(str);
 	return (res);
 }
 
@@ -40,6 +39,7 @@ t_token	*expander(t_token *tokens, t_shell *shell)
 {
 	t_token	*head;
 	char	*old;
+	char *old2;
 
 	if (!tokens)
 		return (NULL);
@@ -58,7 +58,10 @@ t_token	*expander(t_token *tokens, t_shell *shell)
 			tokens->token = expand_env(old, shell);
 			free(old);
 		}
+		old2 = tokens->token;
 		tokens->token = remove_quotes(tokens->token);
+		if (old2 && old2 != tokens->token)
+			free(old2);
 		tokens = tokens->next;
 	}
 	return (head);

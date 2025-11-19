@@ -103,6 +103,8 @@ int	redir_input(char *filename, t_shell *shell);
 t_redir *apply_redirections(char **argv, t_shell *shell);
 int is_redirection(char *argv);
 void	shell_init(t_shell *shell, char **envp);
+int	redir_allocation(t_redir *redir, t_shell *shell);
+char	*get_heredoc(char *file, t_shell *shell);
 
 /* ************************** */
 /*          LEXER              */
@@ -111,7 +113,8 @@ void	shell_init(t_shell *shell, char **envp);
 t_token	*lexer(char *input);
 int		ft_isspace(char c);
 int		is_operator_start(char c);
-size_t	ft_strlicpy(char *dest, const char *src, size_t size);
+//size_t	ft_strlicpy(char *dest, const char *src, size_t size);
+char    *ft_strndup(const char *s, size_t n);
 
 /* ************************** */
 /*          PARSER             */
@@ -177,7 +180,14 @@ void	setup_signals_child(void);
 void	setup_signals_parent(void);
 void	setup_signals_heredoc(void);
 
+/* ************************** */
+/*          CLEANUP           */
+/* ************************** */
 
+void	free_split(char **argv, int order);
+void    cleanup(t_token *tokens, t_tree *tree, t_shell *shell);
+void    free_redir(t_redir *redir);
+void    free_tokens(t_token *tokens);
 
 int		ft_strcmp(const char *s1, const char *s2);// TO ADD TO LIBFT
 

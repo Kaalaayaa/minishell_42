@@ -80,6 +80,8 @@ t_tree	*init_tree(t_type s)
 	t_tree	*ret;
 
 	ret = malloc(sizeof(t_tree));
+	if (!ret)
+		return (NULL);
 	ret->redirections = NULL;
 	ret->type = s;
 	ret->argv = NULL;
@@ -89,31 +91,33 @@ t_tree	*init_tree(t_type s)
 	return (ret);
 }
 
-t_tree	*parse_e(t_token **tokens, t_shell *shell)
+t_tree	*parse_e(t_token **head, t_shell *shell)
 {
 	t_tree	*left;
 	t_tree	*right;
 	t_tree	*pipe_node;
+	t_token *tokens;
 
-	if (!*tokens)
+	tokens = *head;
+	if (!tokens || !tokens->token)
 		return (NULL);
 	left = init_tree(WORD);
-	left->argv = parse_simple_command(*tokens);
+	left->argv = parse_simple_command(tokens);
 	left->redirections = apply_redirections(left->argv, shell);
-	while (*tokens && (*tokens)->type == WORD)
-		*tokens = (*tokens)->next;
-	while (*tokens && (*tokens)->type == PIPE)
+	while (tokens && (tokens)->type == WORD)
+		tokens = (tokens)->next;
+	while (tokens && (tokens)->type == PIPE)
 	{
-		*tokens = (*tokens)->next;
+		tokens = (tokens)->next;
 		right = init_tree(WORD);
-		right->argv = parse_simple_command(*tokens);
+		right->argv = parse_simple_command(tokens);
 		right->redirections = apply_redirections(right->argv, shell);
 		pipe_node = add_tree_node("|", PIPE);
 		pipe_node->right = right;
 		pipe_node->left = left;
 		left = pipe_node;
-		while (*tokens && (*tokens)->type == WORD)
-			*tokens = (*tokens)->next;
+		while (tokens && (tokens)->type == WORD)
+			tokens = (tokens)->next;
 	}
 	return (left);
 }

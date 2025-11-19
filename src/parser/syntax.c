@@ -50,13 +50,14 @@ static int check_pipe_syntax(t_token *current, t_token *tokens)
 
 t_token *syntax(t_token *tokens, t_shell *shell)
 {
+    t_token *head;
     t_token *current;
+    
     current = tokens;
+    
     if (!current)
-    {
         return (NULL);
-    }
-
+    head = tokens;
     while (current)
     {
         if (is_redirection(current->token))
@@ -77,5 +78,5 @@ t_token *syntax(t_token *tokens, t_shell *shell)
         }
         current = current->next;
     }
-    return (tokens);
+    return (head);
 }
