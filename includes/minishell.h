@@ -188,5 +188,6 @@ void	free_split(char **argv, int order);
 void    cleanup(t_token *tokens, t_tree *tree, t_shell *shell);
 void    free_redir(t_redir *redir);
 void    free_tokens(t_token *tokens);
-
+void    free_env(t_env *env);
+void	free_exec_resources(char **envp, char *path);
 #endif

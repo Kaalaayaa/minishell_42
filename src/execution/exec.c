@@ -1,10 +1,10 @@
 #include "../includes/minishell.h"
 
-void verify_path(char *path, t_tree *tree);
+void		verify_path(char **envp, char *path, t_tree *tree);
 
 void	pipe_end(int *fd, int side, t_tree *tree, t_shell *shell)
 {
-	if (side == 0) //left
+	if (side == 0) // left
 	{
 		setup_signals_child();
 		dup2(fd[1], STDOUT_FILENO);
@@ -18,7 +18,7 @@ void	pipe_end(int *fd, int side, t_tree *tree, t_shell *shell)
 		setup_signals_child();
 		dup2(fd[0], STDIN_FILENO);
 		close(fd[0]);
-		close(fd[1]);	
+		close(fd[1]);
 		exec_tree(tree->right, shell);
 		exit(shell->exit_status);
 	}
@@ -26,14 +26,14 @@ void	pipe_end(int *fd, int side, t_tree *tree, t_shell *shell)
 
 void	exec_pipe(t_tree *tree, t_shell *shell)
 {
-	int	fd[2];
+	int		fd[2];
 	pid_t	left_pid;
 	pid_t	right_pid;
 	int		status;
 
 	if (!tree || !shell)
 		return ;
-	shell->in_pipe = true;	
+	shell->in_pipe = true;
 	if (pipe(fd) == -1)
 		return ;
 	left_pid = fork();
@@ -47,7 +47,7 @@ void	exec_pipe(t_tree *tree, t_shell *shell)
 	waitpid(left_pid, NULL, 0);
 	waitpid(right_pid, &status, 0);
 	if (WIFEXITED(status))
-		shell->exit_status = WEXITSTATUS(status);	
+		shell->exit_status = WEXITSTATUS(status);
 	else if (WIFSIGNALED(status))
 		shell->exit_status = 128 + WTERMSIG(status);
 	shell->in_pipe = false;
@@ -114,71 +114,79 @@ char	**get_envp(t_env *env)
 	return (ret);
 }
 
-
 void	print_and_exit(char *s1, char *s2, char *s3, int exitcode)
 {
 	print_error(s1, s2, s3);
 	exit(exitcode);
 }
 
-
-void execute_foreign(char **envp, char *path, t_tree *tree)
+void	execute_foreign(char **envp, char *path, t_tree *tree)
 {
-    char *execpath;
+	char	*execpath;
 
-    verify_path(path, tree);
-
-    execpath = path;
-    if (ft_strchr(tree->argv[0], '/'))
-        execpath = tree->argv[0];
-
-    execve(execpath, tree->argv, envp);
-
-    if (errno == EACCES)
-        print_and_exit("minishell: ", tree->argv[0], ": Permission denied\n", 126);
-    else if (errno == ENOENT)
-        print_and_exit("minishell: ", tree->argv[0], ": No such file or directory\n", 127);
-
-    print_error("minishell: ", tree->argv[0], ": ");
-    print_error(strerror(errno), "\n", NULL);
-    exit(127);
+	verify_path(envp, path, tree);
+	execpath = path;
+	if (ft_strchr(tree->argv[0], '/'))
+		execpath = tree->argv[0];
+	execve(execpath, tree->argv, envp);
+	free_exec_resources(envp, path);
+	if (errno == EACCES)
+		print_and_exit("minishell: ", tree->argv[0], ": Permission denied\n",
+			126);
+	else if (errno == ENOENT)
+		print_and_exit("minishell: ", tree->argv[0],
+			": No such file or directory\n", 127);
+	print_error("minishell: ", tree->argv[0], ": ");
+	print_error(strerror(errno), "\n", NULL);
+	exit(127);
 }
 
-static void	check_slash_path(t_tree *tree)
+static void	check_slash_path(char **envp, char *path, t_tree *tree)
 {
 	struct stat	st;
 
 	if (stat(tree->argv[0], &st) != 0)
+	{
+		free_exec_resources(envp, path);
 		print_and_exit("minishell: ", tree->argv[0],
 			": No such file or directory\n", 127);
+	}
 	if (S_ISDIR(st.st_mode))
-		print_and_exit("minishell: ", tree->argv[0],
-			": Is a directory\n", 126);
+	{
+		free_exec_resources(envp, path);
+		print_and_exit("minishell: ", tree->argv[0], ": Is a directory\n", 126);
+	}
 }
 
-static void	check_normal_path(char *path, t_tree *tree)
+static void	check_normal_path(char **envp, char *path, t_tree *tree)
 {
 	struct stat	st;
 
 	if (!path)
-		print_and_exit("minishell: ", tree->argv[0],
-			": command not found\n", 127);
+	{
+		free_exec_resources(envp, path);
+		print_and_exit("minishell: ", tree->argv[0], ": command not found\n",
+			127);
+	}
 	if (stat(path, &st) == 0)
 	{
 		if (S_ISDIR(st.st_mode))
-			print_and_exit("minishell: ", tree->argv[0],
-				": Is a directory\n", 126);
+		{
+			free_exec_resources(envp, path);
+			print_and_exit("minishell: ", tree->argv[0], ": Is a directory\n",
+				126);
+		}
 	}
 }
 
-void	verify_path(char *path, t_tree *tree)
+void	verify_path(char **envp, char *path, t_tree *tree)
 {
 	if (ft_strchr(tree->argv[0], '/'))
 	{
-		check_slash_path(tree);
+		check_slash_path(envp, path, tree);
 		return ;
 	}
-	check_normal_path(path, tree);
+	check_normal_path(envp, path, tree);
 }
 void	free_exec_resources(char **envp, char *path)
 {
@@ -187,7 +195,6 @@ void	free_exec_resources(char **envp, char *path)
 	if (path)
 		free(path);
 }
-
 
 static int	run_parent_builtin(t_tree *tree, t_shell *shell)
 {
@@ -199,15 +206,16 @@ static int	run_parent_builtin(t_tree *tree, t_shell *shell)
 	return (1);
 }
 
-static void	child_exec(t_tree *tree, t_shell *shell,
-			char **envp, char *path)
+static void	child_exec(t_tree *tree, t_shell *shell, char **envp, char *path)
 {
 	if (is_builtin(tree->argv[0]))
 	{
 		execute_builtin(tree->argv, shell);
+		free_exec_resources(envp, path);
 		exit(shell->exit_status);
 	}
 	execute_foreign(envp, path, tree);
+	free_exec_resources(envp, path);
 	exit(127);
 }
 
@@ -235,8 +243,7 @@ void	exec_cmd(t_tree *tree, t_shell *shell)
 	if (pid == 0)
 		child_exec(tree, shell, envp, path);
 	waitpid(pid, &status, 0);
-	free_split(envp, 0);
-	free(path);
+	free_exec_resources(envp, path);
 	update_exit_status(status, shell);
 }
 
@@ -248,8 +255,8 @@ void	write_lines(char *argv)
 	if (fork() == 0)
 	{
 		close(fd[0]);
-			write(fd[1], argv, ft_strlen(argv));
-			write(fd[1], "\n", 1);
+		write(fd[1], argv, ft_strlen(argv));
+		write(fd[1], "\n", 1);
 		close(fd[1]);
 		exit(0);
 	}
@@ -267,7 +274,7 @@ int	redir_allocation(t_redir *redirections, t_shell *shell)
 	{
 		if (!redir_append(redirections->filename, shell))
 			return (0);
-	}	
+	}
 	else if (redirections->type == REDIR_OUT)
 	{
 		if (!redir_output(redirections->filename, shell))
@@ -283,41 +290,40 @@ int	redir_allocation(t_redir *redirections, t_shell *shell)
 	return (1);
 }
 
-void exec_with_redir(t_tree *tree, t_shell *shell)
+void	exec_with_redir(t_tree *tree, t_shell *shell)
 {
 	int		outfd;
 	int		infd;
 	int		res;
-	t_redir *redir;
+	t_redir	*redir;
 
 	redir = tree->redirections;
 	res = 1;
 	outfd = dup(STDOUT_FILENO);
 	infd = dup(STDIN_FILENO);
-	while(redir && redir->filename && redir->type)
+	while (redir && redir->filename && redir->type)
 	{
-			if (!redir_allocation(redir, shell))
-			{
-				res = 0;
-				shell->exit_status = 1;
-				break;
-			}
-			redir = redir->next;
+		if (!redir_allocation(redir, shell))
+		{
+			res = 0;
+			shell->exit_status = 1;
+			break ;
+		}
+		redir = redir->next;
 	}
-		if (res)
-			exec_cmd(tree, shell);
-		dup2(outfd, STDOUT_FILENO);
-		dup2(infd, STDIN_FILENO);
-		close(outfd);
-		close(infd);
+	if (res)
+		exec_cmd(tree, shell);
+	dup2(outfd, STDOUT_FILENO);
+	dup2(infd, STDIN_FILENO);
+	close(outfd);
+	close(infd);
 }
 void	exec_tree(t_tree *tree, t_shell *shell)
 {
-
 	if (!tree)
 		return ;
 	if (tree->type == PIPE)
-	{	
+	{
 		exec_pipe(tree, shell);
 		return ;
 	}
