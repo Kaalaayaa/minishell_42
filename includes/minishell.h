@@ -6,7 +6,7 @@
 /*   By: kchatela <kchatela@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/21 09:34:36 by pdangwal          #+#    #+#             */
-/*   Updated: 2025/11/19 17:20:16 by kchatela         ###   ########.fr       */
+/*   Updated: 2025/11/19 19:29:47 by kchatela         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,6 +105,7 @@ int is_redirection(char *argv);
 void	shell_init(t_shell *shell, char **envp);
 int	redir_allocation(t_redir *redir, t_shell *shell);
 char	*get_heredoc(char *file, t_shell *shell);
+void    delete_line(char **argv, int index);
 
 /* ************************** */
 /*          LEXER              */
@@ -148,7 +149,6 @@ int		builtin_exit(char **argv, t_shell *shell);
 int		builtin_export(char **argv, t_shell *shell);
 int		builtin_unset(char **argv, t_shell *shell);
 int		builtin_cd(char **argv, t_shell *shell);
-void	print_error(char *s1, char *s2, char *s3);
 
 /* ************************** */
 /*         ENVIRONMENT          */
@@ -190,4 +190,12 @@ void    free_redir(t_redir *redir);
 void    free_tokens(t_token *tokens);
 void    free_env(t_env *env);
 void	free_exec_resources(char **envp, char *path);
+
+/* ************************** */
+/*         UTILS	          */
+/* ************************** */
+char *ft_strtrim_free(char *src, const char *set);
+void	print_error(char *s1, char *s2, char *s3);
+
+
 #endif

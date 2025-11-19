@@ -9,7 +9,6 @@ int	builtin_echo(char **argv)
 
 	i = 1;
 	newline = 1;
-	// Handle multiple -n flags
 	while (argv[i] && argv[i][0] == '-' && argv[i][1] == 'n')
 	{
 		j = 1;
@@ -20,7 +19,6 @@ int	builtin_echo(char **argv)
 		newline = 0;
 		i++;
 	}
-	// Prints arguments
 	while (argv[i])
 	{
 		printf("%s", argv[i]);

@@ -6,7 +6,7 @@
 /*   By: kchatela <kchatela@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/24 15:19:27 by pdangwal          #+#    #+#             */
-/*   Updated: 2025/11/19 17:49:12 by kchatela         ###   ########.fr       */
+/*   Updated: 2025/11/19 19:02:39 by kchatela         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,6 +55,7 @@ int	main(int argc, char **argv, char **envp)
 		cleanup(tokens, root, NULL);
 		free(line);
 	}
+	
 	rl_clear_history();
 	return (0);
 }

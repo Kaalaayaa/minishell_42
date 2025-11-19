@@ -9,7 +9,7 @@ SRCS = src/main.c  src/lexer/lexing.c src/lexer/lexer_utils.c \
 	   src/builtins/env.c src/builtins/exit.c src/builtins/export.c src/builtins/export_utils.c \
 	   src/builtins/pwd.c src/builtins/unset.c \
 	   src/env/env.c src/env/update_shlvl.c \
-	   src/signals/signal.c src/signals/signal_heredoc.c src/utils/shell_init.c \
+	   src/signals/signal.c src/signals/signal_heredoc.c src/utils/shell_init.c src/redirection/redirection_2.c\
 	   src/utils/utils.c src/execution/exec.c src/execution/exec_utils.c src/redirection/redirection.c \
 	   src/redirection/redirection_utils.c src/expander/expander.c src/expander/expander_utils.c \
 	   src/expander/expander_2.c src/parser/syntax.c src/cleanup/cleanup.c
