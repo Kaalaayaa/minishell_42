@@ -57,7 +57,7 @@ int main(int argc, char **argv, char **envp)
         
 		//print_tree(root, 0);
         exec_tree(root, &shell);
-        cleanup(tokens, root, NULL);
+        cleanup(tokens, root, &shell);
         free(line);
     }
     rl_clear_history();

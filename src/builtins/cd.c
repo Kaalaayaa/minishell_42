@@ -2,11 +2,13 @@
 
 char	*get_env_value(t_env *env, const char *key)
 {
-	while (env)
+	t_env *tmp;
+	tmp = env;
+	while (tmp)
 	{
-		if (ft_strcmp(env->key, key) == 0)
-			return (env->value);
-		env = env->next;
+		if (ft_strcmp(tmp->key, key) == 0)
+			return (tmp->value);
+		tmp = tmp->next;
 	}
 	return (NULL);
 }

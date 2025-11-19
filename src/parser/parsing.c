@@ -33,6 +33,7 @@ t_tree	*add_tree_node(char *dst, t_type s)
 	tree->type = s;
 	tree->left = NULL;
 	tree->right = NULL;
+	tree->argv = NULL;
 	tree->redirections = NULL;
 	return (tree);
 }
