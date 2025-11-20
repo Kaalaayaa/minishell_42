@@ -10,69 +10,70 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/minishell.h"
+#include "minishell.h"
 
-void	free_tokens(t_token *tokens)
+char	*ft_strjoin_free(char *s1, char *s2, int flag)
 {
-	t_token	*tmp;
+	char	*res;
 
-	while (tokens)
-	{
-		tmp = tokens;
-		tokens = tokens->next;
-		free(tmp->token);
-		free(tmp);
-	}
+	if (!s1 && !s2)
+		return (NULL);
+	if (!s1)
+		return (ft_strdup(s2));
+	if (!s2)
+		return (ft_strdup(s1));
+	res = ft_strjoin(s1, s2);
+	if (flag == 1 || flag == 3)
+		free(s1);
+	if (flag == 2 || flag == 3)
+		free(s2);
+	return (res);
 }
 
-void	free_redir(t_redir *redir)
+void	free_split(char **argv, int order)
 {
-	t_redir	*tmp;
+	int	i;
 
-	if (!redir)
+	if (!argv)
 		return ;
-	while (redir)
+	if (order == 0)
 	{
-		if (redir->filename)
-			free(redir->filename);
-		tmp = redir;
-		redir = redir->next;
+		i = 0;
+		while (argv[i])
+		{
+			free(argv[i]);
+			argv[i] = NULL;
+			i++;
+		}
+	}
+	else
+	{
+		i = order;
+		while (i > 0)
+		{
+			free(argv[i]);
+			argv[i] = NULL;
+			i--;
+		}
+	}
+	free(argv);
+}
+
+void	free_env(t_env *env)
+{
+	t_env	*tmp;
+
+	if (!env)
+		return ;
+	while (env)
+	{
+		if (env->value)
+			free(env->value);
+		if (env->key)
+			free(env->key);
+		tmp = env;
+		env = env->next;
 		free(tmp);
 		tmp = NULL;
 	}
-}
-
-void	free_tree(t_tree *tree)
-{
-	if (!tree)
-		return ;
-	free_tree(tree->left);
-	tree->left = NULL;
-	free_tree(tree->right);
-	tree->right = NULL;
-	if (tree->argv)
-		free_split(tree->argv, 0);
-	if (tree->redirections)
-		free_redir(tree->redirections);
-	if (tree->token)
-		free(tree->token);
-	free(tree);
-}
-
-void	free_shell(t_shell *shell)
-{
-	if (!shell)
-		return ;
-	if (shell->env_list)
-		free_env(shell->env_list);
-}
-
-void	cleanup(t_token *tokens, t_tree *tree, t_shell *shell)
-{
-	if (tokens)
-		free_tokens(tokens);
-	if (tree)
-		free_tree(tree);
-	if (shell)
-		free_shell(shell);
 }

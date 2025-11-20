@@ -12,24 +12,6 @@
 
 #include "minishell.h"
 
-char	*ft_strjoin_free(char *s1, char *s2, int flag)
-{
-	char	*res;
-
-	if (!s1 && !s2)
-		return (NULL);
-	if (!s1)
-		return (ft_strdup(s2));
-	if (!s2)
-		return (ft_strdup(s1));
-	res = ft_strjoin(s1, s2);
-	if (flag == 1 || flag == 3)
-		free(s1);
-	if (flag == 2 || flag == 3)
-		free(s2);
-	return (res);
-}
-
 char	*extract_env_key(char *s)
 {
 	int		i;
@@ -66,4 +48,22 @@ void	append_env_value(char **res, char *value)
 		env = ft_strdup("");
 	append_and_free(res, env);
 	free(env);
+}
+
+void	update_quote(char c, char *q)
+{
+	if (!*q && (c == '\'' || c == '"'))
+		*q = c;
+	else if (c == *q)
+		*q = 0;
+}
+
+size_t	env_exit_status(t_shell *sh, char **res)
+{
+	char	*status;
+
+	status = ft_itoa(sh->exit_status);
+	append_and_free(res, status);
+	free(status);
+	return (2);
 }

@@ -30,16 +30,6 @@ static size_t	handle_single_quote(const char *str, size_t i, char **res)
 	return (i);
 }
 
-static size_t	env_exit_status(t_shell *sh, char **res)
-{
-	char	*status;
-
-	status = ft_itoa(sh->exit_status);
-	append_and_free(res, status);
-	free(status);
-	return (2);
-}
-
 static size_t	handle_env(const char *s, size_t i, t_shell *sh, char **res)
 {
 	size_t	j;

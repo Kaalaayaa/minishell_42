@@ -11,14 +11,28 @@
 /* ************************************************************************** */
 
 #include "minishell.h"
-#include <ctype.h>
 
-static void	update_quote(char c, char *q)
+static void	process_char(int *idx, int *j, char *in_quote, char *res)
 {
-	if (!*q && (c == '\'' || c == '"'))
-		*q = c;
-	else if (c == *q)
-		*q = 0;
+	char	*str;
+
+	str = res;
+	if (*in_quote == '"' && str[*idx] == '\\' && str[*idx + 1])
+	{
+		res[*j] = str[++(*idx)];
+		(*j)++;
+	}
+	else
+	{
+		update_quote(str[*idx], in_quote);
+		if (!((str[*idx] == '\'' || str[*idx] == '"')
+			&& (*in_quote == 0 || *in_quote == str[*idx])))
+		{
+			res[*j] = str[*idx];
+			(*j)++;
+		}
+	}
+	(*idx)++;
 }
 
 static char	*remove_quotes(char *str)
@@ -33,24 +47,12 @@ static char	*remove_quotes(char *str)
 	res = malloc(ft_strlen(str) + 1);
 	if (!res)
 		return (NULL);
+	ft_strlcpy(res, str, ft_strlen(str) + 1);
 	i = 0;
 	j = 0;
 	in_quote = 0;
 	while (str[i])
-	{
-		if (in_quote == '"' && str[i] == '\\' && str[i + 1])
-		{
-			i++;
-			res[j++] = str[i];
-			i++;
-			continue ;
-		}
-		update_quote(str[i], &in_quote);
-		if (!((str[i] == '\'' || str[i] == '"')
-		&& (in_quote == 0 || in_quote == str[i])))
-			res[j++] = str[i];
-		i++;
-	}
+		process_char(&i, &j, &in_quote, res);
 	res[j] = '\0';
 	return (res);
 }

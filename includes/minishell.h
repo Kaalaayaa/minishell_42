@@ -132,7 +132,8 @@ char			*expand_env(const char *s, t_shell *shell);
 char			*extract_env_key(char *s);
 void			append_and_free(char **res, const char *add);
 void			append_env_value(char **res, char *value);
-char			*ft_strjoin_free(char *s1, char *s2, int flag);
+void			update_quote(char c, char *q);
+size_t			env_exit_status(t_shell *sh, char **res);
 
 /* ************************** */
 /*          BUILTINS           */
@@ -182,6 +183,7 @@ void			setup_signals_heredoc(void);
 /*          CLEANUP           */
 /* ************************** */
 
+char			*ft_strjoin_free(char *s1, char *s2, int flag);
 void			free_split(char **argv, int order);
 void			cleanup(t_token *tokens, t_tree *tree, t_shell *shell);
 void			free_redir(t_redir *redir);
