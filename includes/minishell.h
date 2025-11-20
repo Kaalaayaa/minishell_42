@@ -184,7 +184,7 @@ char			*env_join(char *key, char *value);
 int				redir_allocation(t_redir *redirections, t_shell *shell);
 char			**get_envp(t_env *env);
 int				run_parent_builtin(t_tree *tree, t_shell *shell);
-void			child_exec(t_tree *tree, t_shell *shell, 
+void			child_exec(t_tree *tree, t_shell *shell,
 					char **envp, char *path);
 void			pipe_end(int *fd, int side, t_tree *tree, t_shell *shell);
 void			execute_foreign(char **envp, char *path, t_tree *tree);

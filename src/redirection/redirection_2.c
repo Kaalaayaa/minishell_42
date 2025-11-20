@@ -32,26 +32,21 @@ static char	*heredoc_collect(const char *file)
 	char	*line;
 	char	*new;
 
-	new = malloc(1);
+	new = ft_strdup("");
 	if (!new)
 		return (NULL);
-	new[0] = '\0';
 	while (1)
 	{
 		line = readline("> ");
 		if (!line)
 		{
-			print_error(
-				"minishell: warning: here-document delimited by",
+			print_error("minishell: warning: here-document delimited by",
 				" end-of-file (wanted `", (char *)file);
 			print_error("')\n", NULL, NULL);
 			break ;
 		}
 		if (ft_strcmp(line, file) == 0)
-		{
-			free(line);
-			break ;
-		}
+			return (free(line), ft_strtrim_free(new, "\n"));
 		new = ft_strjoin_free(new, "\n", 1);
 		new = ft_strjoin_free(new, line, 3);
 	}

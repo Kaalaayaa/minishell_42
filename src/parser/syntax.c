@@ -15,7 +15,8 @@
 static void	print_syntax_error(const char *token)
 {
 	if (token)
-		write(STDERR_FILENO, "minishell: syntax error near unexpected token `", 47);
+		write(STDERR_FILENO,
+			"minishell: syntax error near unexpected token `", 47);
 	else
 		write(STDERR_FILENO,
 			"minishell: syntax error near unexpected token `newline'\n", 56);
@@ -64,32 +65,22 @@ static int	check_pipe_syntax(t_token *current, t_token *tokens)
 
 t_token	*syntax(t_token *tokens, t_shell *shell)
 {
-	t_token	*head;
 	t_token	*current;
 
 	current = tokens;
-	if (!current)
-		return (NULL);
-	head = tokens;
 	while (current)
 	{
 		if (is_redirection(current->token))
 		{
 			if (!check_redirection_syntax(current))
-			{
-				shell->exit_status = 2;
-				return (NULL);
-			}
+				return (shell->exit_status = 2, NULL);
 		}
 		else if (current->type == PIPE)
 		{
 			if (!check_pipe_syntax(current, tokens))
-			{
-				shell->exit_status = 2;
-				return (NULL);
-			}
+				return (shell->exit_status = 2, NULL);
 		}
 		current = current->next;
 	}
-	return (head);
+	return (tokens);
 }

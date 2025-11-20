@@ -12,12 +12,41 @@
 
 #include "minishell.h"
 
+static void	check_signal(t_shell *shell)
+{
+	if (g_signal_status == 1)
+	{
+		shell->exit_status = 130;
+		g_signal_status = 0;
+	}
+}
+
+static void	process_command(char *line, t_shell *shell)
+{
+	t_token	*tokens;
+	t_tree	*root;
+
+	if (line[0] != '\0')
+		add_history(line);
+	check_signal(shell);
+	tokens = lexer(line);
+	tokens = expander(tokens, shell);
+	tokens = syntax(tokens, shell);
+	root = parse_e(&tokens, shell);
+	if (g_signal_status == 1)
+	{
+		check_signal(shell);
+		cleanup(tokens, root, NULL);
+		return ;
+	}
+	exec_tree(root, shell);
+	cleanup(tokens, root, NULL);
+}
+
 int	main(int argc, char **argv, char **envp)
 {
 	t_shell	shell;
 	char	*line;
-	t_token	*tokens;
-	t_tree	*root;
 
 	(void)argc;
 	(void)argv;
@@ -32,25 +61,7 @@ int	main(int argc, char **argv, char **envp)
 			printf("exit\n");
 			break ;
 		}
-		if (line[0] != '\0')
-			add_history(line);
-		if (g_signal_status == 1)
-		{
-			shell.exit_status = 130;
-			g_signal_status = 0;
-		}
-		tokens = lexer(line);
-		tokens = expander(tokens, &shell);
-		tokens = syntax(tokens, &shell);
-		root = parse_e(&tokens, &shell);
-		if (g_signal_status == 1)
-		{
-			shell.exit_status = 130;
-			g_signal_status = 0;
-			continue ;
-		}
-		exec_tree(root, &shell);
-		cleanup(tokens, root, NULL);
+		process_command(line, &shell);
 		free(line);
 	}
 	rl_clear_history();

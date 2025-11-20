@@ -61,26 +61,22 @@ void	alot_redirection(t_redir **ret, char **argv, int index, t_shell *shell)
 }
 
 static int	create_and_append_redir(t_redir **ret, t_redir **head,
-		char **argv, int index, t_shell *shell)
+		char **argv, t_shell *shell)
 {
 	t_redir	*new_node;
+	int		index;
 
+	index = 0;
+	while (argv[index] && !is_redirection(argv[index]))
+		index++;
 	new_node = add_redir_node();
 	if (!new_node)
-	{
-		free_redir(*head);
-		return (0);
-	}
+		return (free_redir(*head), 0);
 	if (!*ret)
-	{
 		*head = new_node;
-		*ret = new_node;
-	}
 	else
-	{
 		(*ret)->next = new_node;
-		*ret = (*ret)->next;
-	}
+	*ret = new_node;
 	alot_redirection(ret, argv, index, shell);
 	return (1);
 }
@@ -98,7 +94,7 @@ t_redir	*apply_redirections(char **argv, t_shell *shell)
 	{
 		if (is_redirection(argv[i]) && argv[i + 1])
 		{
-			if (!create_and_append_redir(&ret, &head, argv, i, shell))
+			if (!create_and_append_redir(&ret, &head, argv, shell))
 				return (NULL);
 		}
 		else
