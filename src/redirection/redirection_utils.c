@@ -1,4 +1,16 @@
-#include "../includes/minishell.h"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   redirection_utils.c                                :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: kchatela <kchatela@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/10/24 15:23:35 by pdangwal          #+#    #+#             */
+/*   Updated: 2025/11/20 15:34:04 by kchatela         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "minishell.h"
 
 int	redir_append(char *file, t_shell *shell)
 {
@@ -19,8 +31,8 @@ int	redir_append(char *file, t_shell *shell)
 
 int	redir_output(char *file, t_shell *shell)
 {
-	int fd;
-	int ret;
+	int	fd;
+	int	ret;
 
 	ret = 1;
 	fd = open(file, O_WRONLY | O_CREAT | O_TRUNC, 0644);

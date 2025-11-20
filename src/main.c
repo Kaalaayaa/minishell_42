@@ -47,15 +47,12 @@ int	main(int argc, char **argv, char **envp)
 		{
 			shell.exit_status = 130;
 			g_signal_status = 0;
-			// free(line);
 			continue ;
 		}
-		// print_tree(root, 0);
 		exec_tree(root, &shell);
 		cleanup(tokens, root, NULL);
 		free(line);
 	}
-	
 	rl_clear_history();
 	return (0);
 }

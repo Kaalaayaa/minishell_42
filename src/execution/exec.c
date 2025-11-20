@@ -1,10 +1,22 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   exec.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: kchatela <kchatela@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/10/24 15:23:35 by pdangwal          #+#    #+#             */
+/*   Updated: 2025/11/12 15:34:04 by kchatela         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../includes/minishell.h"
 
 void		verify_path(char **envp, char *path, t_tree *tree);
 
 void	pipe_end(int *fd, int side, t_tree *tree, t_shell *shell)
 {
-	if (side == 0) // left
+	if (side == 0)
 	{
 		setup_signals_child();
 		dup2(fd[1], STDOUT_FILENO);
@@ -188,6 +200,7 @@ void	verify_path(char **envp, char *path, t_tree *tree)
 	}
 	check_normal_path(envp, path, tree);
 }
+
 void	free_exec_resources(char **envp, char *path)
 {
 	if (envp)
@@ -226,6 +239,7 @@ static void	update_exit_status(int status, t_shell *shell)
 	else if (WIFSIGNALED(status))
 		shell->exit_status = 128 + WTERMSIG(status);
 }
+
 void	exec_cmd(t_tree *tree, t_shell *shell)
 {
 	pid_t	pid;
@@ -318,6 +332,7 @@ void	exec_with_redir(t_tree *tree, t_shell *shell)
 	close(outfd);
 	close(infd);
 }
+
 void	exec_tree(t_tree *tree, t_shell *shell)
 {
 	if (!tree)

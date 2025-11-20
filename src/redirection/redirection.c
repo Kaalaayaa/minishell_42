@@ -1,6 +1,18 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   redirection.c                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: kchatela <kchatela@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/10/24 15:23:35 by pdangwal          #+#    #+#             */
+/*   Updated: 2025/11/20 15:34:04 by kchatela         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../includes/minishell.h"
 
-t_redir *add_redir_node(void)
+t_redir	*add_redir_node(void)
 {
 	t_redir	*r;
 
@@ -12,48 +24,46 @@ t_redir *add_redir_node(void)
 	return (r);
 }
 
-int is_redirection(char *argv)
+int	is_redirection(char *argv)
 {
 	if (!argv || !argv[0])
-		return (0);	
-	
-    if (ft_strcmp(argv, ">") == 0)
-        return (1);
-    else if (ft_strcmp(argv, ">>") == 0)
-        return (1);
-    else if (ft_strcmp(argv, "<") == 0)
-        return (1);
-    else if (ft_strcmp(argv, "<<") == 0)
-        return (1);
-    return (0);
+		return (0);
+	if (ft_strcmp(argv, ">") == 0)
+		return (1);
+	else if (ft_strcmp(argv, ">>") == 0)
+		return (1);
+	else if (ft_strcmp(argv, "<") == 0)
+		return (1);
+	else if (ft_strcmp(argv, "<<") == 0)
+		return (1);
+	return (0);
 }
 
-void    alot_redirection(t_redir **ret, char **argv, int index, t_shell *shell)
+void	alot_redirection(t_redir **ret, char **argv, int index, t_shell *shell)
 {
-
-    if (ft_strcmp(argv[index], ">") == 0)
-        (*ret)->type = REDIR_OUT;
-    else if (ft_strcmp(argv[index], ">>") == 0)
-        (*ret)->type = REDIR_APPEND;
-    else if (ft_strcmp(argv[index], "<") == 0)
-        (*ret)->type = REDIR_IN;
-    else if (ft_strcmp(argv[index], "<<") == 0)
-    {
-        (*ret)->type = REDIR_HEREDOC;
-        (*ret)->filename = get_heredoc(argv[index + 1], shell);
-        delete_line(argv, index);
-        delete_line(argv, index);
-        return ;
-    }
-    (*ret)->filename = ft_strdup(argv[index + 1]);
-    delete_line(argv, index);
-    delete_line(argv, index);
+	if (ft_strcmp(argv[index], ">") == 0)
+		(*ret)->type = REDIR_OUT;
+	else if (ft_strcmp(argv[index], ">>") == 0)
+		(*ret)->type = REDIR_APPEND;
+	else if (ft_strcmp(argv[index], "<") == 0)
+		(*ret)->type = REDIR_IN;
+	else if (ft_strcmp(argv[index], "<<") == 0)
+	{
+		(*ret)->type = REDIR_HEREDOC;
+		(*ret)->filename = get_heredoc(argv[index + 1], shell);
+		delete_line(argv, index);
+		delete_line(argv, index);
+		return ;
+	}
+	(*ret)->filename = ft_strdup(argv[index + 1]);
+	delete_line(argv, index);
+	delete_line(argv, index);
 }
 
 static int	create_and_append_redir(t_redir **ret, t_redir **head,
-				char **argv, int index, t_shell *shell)
+		char **argv, int index, t_shell *shell)
 {
-	t_redir *new_node;
+	t_redir	*new_node;
 
 	new_node = add_redir_node();
 	if (!new_node)
@@ -75,11 +85,11 @@ static int	create_and_append_redir(t_redir **ret, t_redir **head,
 	return (1);
 }
 
-t_redir *apply_redirections(char **argv, t_shell *shell)
+t_redir	*apply_redirections(char **argv, t_shell *shell)
 {
-	t_redir *ret;
-	t_redir *head;
-	int i;
+	t_redir	*ret;
+	t_redir	*head;
+	int		i;
 
 	ret = NULL;
 	head = NULL;
@@ -90,7 +100,7 @@ t_redir *apply_redirections(char **argv, t_shell *shell)
 		{
 			if (!create_and_append_redir(&ret, &head, argv, i, shell))
 				return (NULL);
-			i -= 2; // Adjust index after deleting tokens
+			i -= 2;
 		}
 		i++;
 	}

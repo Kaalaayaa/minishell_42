@@ -48,13 +48,13 @@ char	**parse_simple_command(t_token *tokens)
 	tmp = tokens;
 	while (tmp && tmp->type == WORD)
 	{
-			if (ft_strcmp(tmp->token, "$EMPTY") == 0)
-			{
-				tmp = tmp->next;
-				if (tmp == NULL)
-					break;
-			}
+		if (ft_strcmp(tmp->token, "$EMPTY") == 0)
+		{
 			tmp = tmp->next;
+			if (tmp == NULL)
+				break ;
+		}
+		tmp = tmp->next;
 		i++;
 	}
 	argv = malloc(sizeof(char *) * (i + 1));
@@ -65,10 +65,10 @@ char	**parse_simple_command(t_token *tokens)
 		{
 			tokens = tokens->next;
 			if (tokens == NULL)
-				break;
+				break ;
 		}
-				argv[i] = ft_strdup(tokens->token);
-			i++;
+		argv[i] = ft_strdup(tokens->token);
+		i++;
 		if (tokens != NULL)
 			tokens = tokens->next;
 	}
@@ -97,7 +97,7 @@ t_tree	*parse_e(t_token **head, t_shell *shell)
 	t_tree	*left;
 	t_tree	*right;
 	t_tree	*pipe_node;
-	t_token *tokens;
+	t_token	*tokens;
 
 	tokens = *head;
 	if (!tokens || !tokens->token)
@@ -123,14 +123,13 @@ t_tree	*parse_e(t_token **head, t_shell *shell)
 	return (left);
 }
 
+/*
 void	print_tree(t_tree *node, int depth)
 {
 	if (!node)
 		return ;
-	// print indentation
 	for (int i = 0; i < depth; i++)
 		printf("    ");
-	// print this node
 	if (node->type == PIPE)
 		printf("[PIPE]\n");
 	else if (node->argv)
@@ -144,9 +143,8 @@ void	print_tree(t_tree *node, int depth)
 		printf("[TOKEN] %s\n", node->token);
 	else
 		printf("[UNKNOWN]\n");
-	// recursively print children
 	if (node->left)
 		print_tree(node->left, depth + 1);
 	if (node->right)
 		print_tree(node->right, depth + 1);
-}
+}*/

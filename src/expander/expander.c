@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   expander.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: kchatela <kchatela@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/10/24 15:23:35 by pdangwal          #+#    #+#             */
+/*   Updated: 2025/11/12 15:34:04 by kchatela         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 #include <ctype.h>
 
@@ -31,10 +43,11 @@ static char	*remove_quotes(char *str)
 			i++;
 			res[j++] = str[i];
 			i++;
-			continue;
+			continue ;
 		}
 		update_quote(str[i], &in_quote);
-		if (!((str[i] == '\'' || str[i] == '"') && (in_quote == 0 || in_quote == str[i])))
+		if (!((str[i] == '\'' || str[i] == '"')
+		&& (in_quote == 0 || in_quote == str[i])))
 			res[j++] = str[i];
 		i++;
 	}
@@ -42,11 +55,25 @@ static char	*remove_quotes(char *str)
 	return (res);
 }
 
+static void	refresh_token(t_token *token, t_shell *shell)
+{
+	char	*old;
+
+	if (token->token && ft_strchr(token->token, '$'))
+	{
+		old = token->token;
+		token->token = expand_env(old, shell);
+		free(old);
+	}
+	old = token->token;
+	token->token = remove_quotes(token->token);
+	if (old && old != token->token)
+		free(old);
+}
+
 t_token	*expander(t_token *tokens, t_shell *shell)
 {
 	t_token	*head;
-	char	*old;
-	char *old2;
 
 	if (!tokens)
 		return (NULL);
@@ -55,20 +82,11 @@ t_token	*expander(t_token *tokens, t_shell *shell)
 	{
 		if (tokens->token && ft_strcmp(tokens->token, "$EMPTY") == 0)
 		{
-				tokens = tokens->next;
-				if (tokens == NULL)
-					break;
-		}	
-		if (tokens->token && ft_strchr(tokens->token, '$'))
-		{
-			old = tokens->token;
-			tokens->token = expand_env(old, shell);
-			free(old);
+			tokens = tokens->next;
+			if (tokens == NULL)
+				break ;
 		}
-		old2 = tokens->token;
-		tokens->token = remove_quotes(tokens->token);
-		if (old2 && old2 != tokens->token)
-			free(old2);
+		refresh_token(tokens, shell);
 		tokens = tokens->next;
 	}
 	return (head);

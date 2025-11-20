@@ -10,14 +10,15 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../includes/minishell.h"
 
 void	write_string(char *s, int fd)
 {
-	int i;
-	char c;
+	int		i;
+	char	c;
+
 	i = 0;
-	while(s[i])
+	while (s[i])
 	{
 		c = s[i];
 		write(fd, &c, 1);
@@ -35,15 +36,15 @@ void	print_error(char *s1, char *s2, char *s3)
 		write_string(s3, 2);
 }
 
-char *ft_strtrim_free(char *src, const char *set)
+char	*ft_strtrim_free(char *src, const char *set)
 {
-	char *dest;
+	char	*dest;
 
 	if (!src)
 		return (NULL);
 	if (!set)
 		return (src);
 	dest = ft_strtrim(src, set);
-	free(src);	
+	free(src);
 	return (dest);
 }

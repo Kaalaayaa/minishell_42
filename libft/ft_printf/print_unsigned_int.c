@@ -22,7 +22,7 @@ int	print_unsigned_int(unsigned int nb)
 		count += print_unsigned_int(nb / 10);
 		count += print_unsigned_int(nb % 10);
 	}
-	else 
+	else
 	{
 		ft_putchar_fd(nb + 48, 1);
 		count++;

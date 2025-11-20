@@ -20,5 +20,5 @@ int	print_string(char *str)
 		return (6);
 	}
 	ft_putstr_fd(str, 1);
-	return (ft_strlen(str)); 
+	return (ft_strlen(str));
 }

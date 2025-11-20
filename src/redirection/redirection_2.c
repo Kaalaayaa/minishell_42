@@ -1,24 +1,36 @@
-#include "minishell.h"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   redirection_2.c                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: kchatela <kchatela@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/10/24 15:23:35 by pdangwal          #+#    #+#             */
+/*   Updated: 2025/11/20 15:34:04 by kchatela         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
-void    delete_line(char **argv, int index)
+#include "../includes/minishell.h"
+
+void	delete_line(char **argv, int index)
 {
-    int i;
+	int	i;
 
-    if (!argv)
-        return ;
-    free(argv[index]);
-    i = index;
-    while(argv[i])
-    {
-        argv[i] = argv[i + 1];
-        i++;
-    }
+	if (!argv)
+		return ;
+	free(argv[index]);
+	i = index;
+	while (argv[i])
+	{
+		argv[i] = argv[i + 1];
+		i++;
+	}
 }
 
-static char *heredoc_collect(const char *file)
+static char	*heredoc_collect(const char *file)
 {
-	char *line;
-	char *new;
+	char	*line;
+	char	*new;
 
 	new = malloc(1);
 	if (!new)
@@ -29,7 +41,10 @@ static char *heredoc_collect(const char *file)
 		line = readline("> ");
 		if (!line)
 		{
-			print_error("minishell: warning: here-document delimited by end-of-file (wanted `", (char *)file, "')\n");
+			print_error(
+				"minishell: warning: here-document delimited by",
+				" end-of-file (wanted `", (char *)file);
+			print_error("')\n", NULL, NULL);
 			break ;
 		}
 		if (ft_strcmp(line, file) == 0)
@@ -43,9 +58,9 @@ static char *heredoc_collect(const char *file)
 	return (ft_strtrim_free(new, "\n"));
 }
 
-static void heredoc_child(const char *file, int fdw)
+static void	heredoc_child(const char *file, int fdw)
 {
-	char *new;
+	char	*new;
 
 	setup_signals_heredoc();
 	new = heredoc_collect(file);
@@ -55,11 +70,11 @@ static void heredoc_child(const char *file, int fdw)
 	exit(0);
 }
 
-static char *heredoc_parent(int fd_read, pid_t pid, t_shell *shell)
+static char	*heredoc_parent(int fd_read, pid_t pid, t_shell *shell)
 {
-	int status;
-	char buffer[1024];
-	int bytes;
+	int		status;
+	int		bytes;
+	char	buffer[1024];
 
 	setup_signals_parent();
 	waitpid(pid, &status, 0);
@@ -80,8 +95,8 @@ static char *heredoc_parent(int fd_read, pid_t pid, t_shell *shell)
 
 char	*get_heredoc(char *file, t_shell *shell)
 {
-	pid_t   pid;
-    int     fd[2];
+	pid_t	pid;
+	int		fd[2];
 
 	if (pipe(fd) == -1)
 		return (NULL);

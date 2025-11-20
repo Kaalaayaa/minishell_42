@@ -21,18 +21,16 @@ int	ft_isspace(char c)
 
 char	*ft_strdup(const char *s)
 {
-	char *str;
-	int i;
-	int j;
+	char	*str;
+	int		i;
+	int		j;
 
 	i = 0;
 	while (s[i])
 		i++;
 	str = (char *)malloc((i + 1) * sizeof(char));
 	if (str == NULL)
-	{
 		return (NULL);
-	}
 	j = 0;
 	while (j <= i)
 	{
@@ -66,23 +64,22 @@ size_t	ft_strlicpy(char *dest, const char *src, size_t size)
 	return (i);
 }
 
-
-char    *ft_strndup(const char *s, size_t n)
+char	*ft_strndup(const char *s, size_t n)
 {
-    char    *dup;
-    size_t  i;
+	char	*dup;
+	size_t	i;
 
-    if (!s)
-        return (NULL);
-    dup = malloc(n + 1);
-    if (!dup)
-        return (NULL);
-    i = 0;
-    while (i < n && s[i])
-    {
-        dup[i] = s[i];
-        i++;
-    }
-    dup[i] = '\0';
-    return (dup);
+	if (!s)
+		return (NULL);
+	dup = malloc(n + 1);
+	if (!dup)
+		return (NULL);
+	i = 0;
+	while (i < n && s[i])
+	{
+		dup[i] = s[i];
+		i++;
+	}
+	dup[i] = '\0';
+	return (dup);
 }
