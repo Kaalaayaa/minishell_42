@@ -100,9 +100,9 @@ t_redir	*apply_redirections(char **argv, t_shell *shell)
 		{
 			if (!create_and_append_redir(&ret, &head, argv, i, shell))
 				return (NULL);
-			i -= 2;
 		}
-		i++;
+		else
+			i++;
 	}
 	return (head);
 }
