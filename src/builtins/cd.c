@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   cd.c                                               :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: kchatela <kchatela@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/10/24 15:23:35 by pdangwal          #+#    #+#             */
+/*   Updated: 2025/11/12 15:34:04 by kchatela         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 char	*get_env_value(t_env *env, const char *key)
@@ -11,14 +23,14 @@ char	*get_env_value(t_env *env, const char *key)
 	return (NULL);
 }
 
-int	change_directory(char *target, char *oldcwd, t_shell *shell, int print_path)
+int	change_directory(char *target, char *oldcwd, t_shell *shell,
+		int print_path)
 {
 	char	newcwd[PATH_MAX];
-    //change dir and if return -1 print error
+
 	if (chdir(target) != 0)
 	{
 		perror("cd");
-		shell->exit_status = 1;
 		return (1);
 	}
 	if (getcwd(newcwd, sizeof(newcwd)))
@@ -28,7 +40,6 @@ int	change_directory(char *target, char *oldcwd, t_shell *shell, int print_path)
 		if (print_path)
 			printf("%s\n", newcwd);
 	}
-	shell->exit_status = 0;
 	return (0);
 }
 
@@ -39,26 +50,23 @@ int	builtin_cd(char **argv, t_shell *shell)
 	int		print_path;
 
 	print_path = 0;
-    //save current directory in oldcwd
+	if (argv[2])
+	{
+		print_error("minishell: cd: ", "too many arguments\n", NULL);
+		return (1);
+	}
 	if (getcwd(oldcwd, sizeof(oldcwd)) == NULL)
 		oldcwd[0] = '\0';
-    //handle cd or cd ~ 
-	if (!argv[1] || ft_strcmp(argv[1], "~") == 0) // if argv[1][0] == "~"
+	if (!argv[1] || ft_strcmp(argv[1], "~") == 0)
 		target = get_env_value(shell->env_list, "HOME");
-    // handle cd - 
-	else if (ft_strcmp(argv[1], "-") == 0) //if argv[1][0] == "-"
+	else if (ft_strcmp(argv[1], "-") == 0)
 	{
 		target = get_env_value(shell->env_list, "OLDPWD");
 		print_path = 1;
 	}
-    //handle normal directory
 	else
 		target = argv[1];
 	if (!target)
-	{
-		printf("cd: HOME not set\n");
-		shell->exit_status = 1;
-		return (1);
-	}
+		return (printf("cd: HOME not set\n"), 1);
 	return (change_directory(target, oldcwd, shell, print_path));
 }

@@ -1,34 +1,66 @@
-#include "../includes/minishell.h"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   redirection_utils.c                                :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: kchatela <kchatela@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/10/24 15:23:35 by pdangwal          #+#    #+#             */
+/*   Updated: 2025/11/20 15:34:04 by kchatela         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
-void	redir_append(char *file)
+#include "minishell.h"
+
+int	redir_append(char *file, t_shell *shell)
 {
 	int	fd;
 
 	fd = open(file, O_WRONLY | O_CREAT | O_APPEND, 0644);
 	if (fd < 0)
-		perror("fd");
+	{
+		print_error("minishell: ", file, ": ");
+		print_error(strerror(errno), "\n", NULL);
+		shell->exit_status = 1;
+		return (0);
+	}
 	dup2(fd, STDOUT_FILENO);
 	close(fd);
+	return (1);
 }
 
-void	redir_output(char *file)
+int	redir_output(char *file, t_shell *shell)
 {
-	int fd;
+	int	fd;
+	int	ret;
 
+	ret = 1;
 	fd = open(file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	if (fd < 0)
-		perror("fd");
+	{
+		print_error("minishell: ", file, ": ");
+		print_error(strerror(errno), "\n", NULL);
+		shell->exit_status = 1;
+		return (0);
+	}
 	dup2(fd, STDOUT_FILENO);
 	close(fd);
+	return (ret);
 }
 
-void	redir_input(char *file)
+int	redir_input(char *file, t_shell *shell)
 {
 	int	fd;
 
 	fd = open(file, O_RDONLY);
 	if (fd < 0)
-		perror("fd");
+	{
+		print_error("minishell: ", file, ": ");
+		print_error(strerror(errno), "\n", NULL);
+		shell->exit_status = 1;
+		return (0);
+	}
 	dup2(fd, STDIN_FILENO);
 	close(fd);
+	return (1);
 }

@@ -1,30 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   sigaction.c                                        :+:      :+:    :+:   */
+/*   ft_strcmp.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: kchatela <kchatela@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/10/21 09:34:06 by pdangwal          #+#    #+#             */
-/*   Updated: 2025/10/31 17:09:43 by kchatela         ###   ########.fr       */
+/*   Created: 2025/10/24 15:23:35 by pdangwal          #+#    #+#             */
+/*   Updated: 2025/11/20 15:34:04 by kchatela         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "libft.h"
 
-/*
-int	main(int argc, char *argv[])
+int	ft_strcmp(const char *s1, const char *s2)
 {
-	struct sigaction sa;
+	size_t	i;
 
-	sa.sa_handler = &handle_sigtstp;
-	sa.sa_flags = SA_RESTART;
-	sigaction(SIGTSTP, &sa, NULL);
-	while(1)
+	i = 0;
+	if (!s1 || !s2)
+		return (s1 - s2);
+	while (s1[i] && s2[i])
 	{
-		printf("stop me\n");
-		sleep(1);
+		if (s1[i] != s2[i])
+			return (s1[i] - s2[i]);
+		i++;
 	}
-
+	return (s1[i] - s2[i]);
 }
-//*/

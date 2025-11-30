@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   expander_2.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: kchatela <kchatela@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/10/24 15:23:35 by pdangwal          #+#    #+#             */
+/*   Updated: 2025/11/12 15:34:04 by kchatela         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 static size_t	handle_single_quote(const char *str, size_t i, char **res)
@@ -16,16 +28,6 @@ static size_t	handle_single_quote(const char *str, size_t i, char **res)
 	else
 		i = j;
 	return (i);
-}
-
-static size_t	env_exit_status(t_shell *sh, char **res)
-{
-	char	*status;
-
-	status = ft_itoa(sh->exit_status);
-	append_and_free(res, status);
-	free(status);
-	return (2);
 }
 
 static size_t	handle_env(const char *s, size_t i, t_shell *sh, char **res)
@@ -57,12 +59,28 @@ static size_t	copy_plain_text(const char *s, size_t i, char **res)
 	char	*part;
 
 	j = i;
-	while (s[j] && s[j] != '$' && s[j] != '\'')
+	while (s[j] && s[j] != '\'')
+	{
+		if (s[j] == '$')
+		{
+			if (s[j + 1] == '"' || s[j + 1] == ' ' || s[j + 1] == '\t')
+				j++;
+			else
+				break ;
+		}
 		j++;
+	}
 	part = ft_substr(s, i, j - i);
 	append_and_free(res, part);
 	free(part);
 	return (j);
+}
+
+static int	handle_single_sign(size_t i, char **res)
+{
+	append_and_free(res, "$");
+	i = i + 1;
+	return (i);
 }
 
 char	*expand_env(const char *str, t_shell *shell)
@@ -78,6 +96,8 @@ char	*expand_env(const char *str, t_shell *shell)
 	{
 		if (str[i] == '\'')
 			i = handle_single_quote(str, i, &res);
+		else if (str[i] == '$' && !str[i + 1])
+			i = handle_single_sign(str[i], &res);
 		else if (str[i] == '$')
 			i = handle_env(str, i, shell, &res);
 		else

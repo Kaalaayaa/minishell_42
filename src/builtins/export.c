@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   export.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: kchatela <kchatela@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/10/24 15:23:35 by pdangwal          #+#    #+#             */
+/*   Updated: 2025/11/12 15:34:04 by kchatela         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 void	print_sorted_env(t_env *env)
@@ -37,7 +49,7 @@ static int	handle_env_var(char *arg, t_shell *shell)
 	equal = ft_strchr(arg, '=');
 	if (equal)
 	{
-		key = strndup(arg, equal - arg); // ADD ft_strndup to LIBFT !!!!
+		key = strndup(arg, equal - arg);
 		value = equal + 1;
 	}
 	else
@@ -47,7 +59,7 @@ static int	handle_env_var(char *arg, t_shell *shell)
 	}
 	if (!is_valid_identifier(key))
 	{
-		printf("export: `%s': not a valid identifier\n", arg);
+		print_error("minishell: export: `", key, "': not a valid identifier\n");
 		free(key);
 		return (1);
 	}
@@ -71,6 +83,5 @@ int	builtin_export(char **argv, t_shell *shell)
 			exit_status = 1;
 		i++;
 	}
-	shell->exit_status = exit_status;
 	return (exit_status);
 }

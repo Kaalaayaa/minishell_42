@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   unset.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: kchatela <kchatela@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/10/24 15:23:35 by pdangwal          #+#    #+#             */
+/*   Updated: 2025/11/12 15:34:04 by kchatela         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 static void	remove_env_node(t_env **env, const char *key)
@@ -45,6 +57,5 @@ int	builtin_unset(char **argv, t_shell *shell)
 			remove_env_node(&shell->env_list, argv[i]);
 		i++;
 	}
-	shell->exit_status = exit_status;
 	return (exit_status);
 }

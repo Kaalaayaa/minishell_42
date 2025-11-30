@@ -1,26 +1,43 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   echo.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: kchatela <kchatela@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/10/24 15:23:35 by pdangwal          #+#    #+#             */
+/*   Updated: 2025/11/12 15:34:04 by kchatela         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
-#include <ctype.h>
+
+static int	is_n_flag(const char *arg)
+{
+	int	i;
+
+	if (!arg || arg[0] != '-')
+		return (0);
+	i = 1;
+	if (arg[i] != 'n')
+		return (0);
+	while (arg[i] == 'n')
+		i++;
+	return (arg[i] == '\0');
+}
 
 int	builtin_echo(char **argv)
 {
 	int	i;
-	int	j;
 	int	newline;
 
 	i = 1;
 	newline = 1;
-	// Handle multiple -n flags
-	while (argv[i] && argv[i][0] == '-' && argv[i][1] == 'n')
+	while (argv[i] && is_n_flag(argv[i]))
 	{
-		j = 1;
-		while (argv[i][j] == 'n')
-			j++;
-		if (argv[i][j] != '\0')
-			break ;
 		newline = 0;
 		i++;
 	}
-	// Prints arguments
 	while (argv[i])
 	{
 		printf("%s", argv[i]);
