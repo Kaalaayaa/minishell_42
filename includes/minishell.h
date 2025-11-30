@@ -25,7 +25,6 @@
 # include <stdlib.h>
 # include <sys/wait.h>
 # include <sys/stat.h>
-# include <time.h>
 # include <unistd.h>
 # include <stdbool.h>
 # include <limits.h>
@@ -158,6 +157,7 @@ char			*get_env_value(t_env *env, const char *key);
 void			add_or_update_env(t_env **env, char *key, char *value);
 void			update_shlvl(t_shell *shell);
 int				is_valid_identifier(char *key);
+int				is_valid_identifier_prefix(char *str, int len);
 int				env_size(t_env *env);
 void			ft_sort_str_tab(char **tab);
 char			*env_to_str(t_env *env);
@@ -169,9 +169,9 @@ char			*env_to_str(t_env *env);
 void			exec_tree(t_tree *tree, t_shell *shell);
 void			ft_trim_end(char *arr, char c);
 char			*get_path(char *argv, t_shell *shell);
+char			*get_path_env(t_shell *shell);
 char			*full_path(char *argv);
 char			**check_path(char *argv, t_shell *shell);
-char			*get_path(char *argv, t_shell *shell);
 void			check_slash_path(char **envp, char *path, t_tree *tree);
 void			check_normal_path(char **envp, char *path, t_tree *tree);
 void			free_exec_resources(char **envp, char *path);
@@ -188,6 +188,9 @@ void			child_exec(t_tree *tree, t_shell *shell,
 					char **envp, char *path);
 void			pipe_end(int *fd, int side, t_tree *tree, t_shell *shell);
 void			execute_foreign(char **envp, char *path, t_tree *tree);
+int				handle_var_assignment(t_tree *tree, t_shell *shell);
+int				check_path_unset(t_tree *tree, t_shell *shell, char **envp,
+					char *path);
 
 /* ************************** */
 /*          SIGNALS             */
