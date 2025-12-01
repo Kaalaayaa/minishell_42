@@ -88,6 +88,7 @@ typedef struct s_shell
 {
 	t_env			*env_list;
 	bool			in_pipe;
+	int				line_number;
 	int				exit_status;
 }			t_shell;
 

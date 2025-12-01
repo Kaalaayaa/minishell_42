@@ -18,6 +18,7 @@ void	shell_init(t_shell *shell, char **envp)
 		return ;
 	shell->env_list = NULL;
 	shell->in_pipe = false;
+	shell->line_number = 0;
 	if (envp)
 		shell->env_list = env_list_init(envp);
 	shell->exit_status = 0;

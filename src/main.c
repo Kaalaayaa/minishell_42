@@ -55,6 +55,7 @@ int	main(int argc, char **argv, char **envp)
 	while (1)
 	{
 		line = readline("minishell% ");
+		shell.line_number++;
 		if (!line)
 		{
 			cleanup(NULL, NULL, &shell);
