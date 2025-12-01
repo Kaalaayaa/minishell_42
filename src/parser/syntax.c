@@ -73,12 +73,18 @@ t_token	*syntax(t_token *tokens, t_shell *shell)
 		if (is_redirection(current->token))
 		{
 			if (!check_redirection_syntax(current))
+			{
+				cleanup(tokens, NULL, NULL);
 				return (shell->exit_status = 2, NULL);
+			}
 		}
 		else if (current->type == PIPE)
 		{
 			if (!check_pipe_syntax(current, tokens))
+			{
+				cleanup(tokens, NULL, NULL);
 				return (shell->exit_status = 2, NULL);
+			}
 		}
 		current = current->next;
 	}

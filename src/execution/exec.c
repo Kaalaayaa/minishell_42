@@ -71,10 +71,14 @@ void	exec_cmd(t_tree *tree, t_shell *shell)
 
 	if (!tree || !tree->argv || !tree->argv[0])
 		return ;
+	if (handle_var_assignment(tree, shell))
+		return ;
 	if (run_parent_builtin(tree, shell))
 		return ;
 	envp = get_envp(shell->env_list);
 	path = get_path(tree->argv[0], shell);
+	if (check_path_unset(tree, shell, envp, path))
+		return ;
 	pid = fork();
 	if (pid == 0)
 		child_exec(tree, shell, envp, path);

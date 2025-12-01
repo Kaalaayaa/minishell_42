@@ -20,15 +20,15 @@ t_env	*create_node_env(char *str)
 	node = malloc(sizeof(t_env));
 	if (!node)
 		return (NULL);
-	equal_sign = strchr(str, '=');
+	equal_sign = ft_strchr(str, '=');
 	if (equal_sign)
 	{
-		node->key = strndup(str, equal_sign - str);
-		node->value = strdup(equal_sign + 1);
+		node->key = ft_strndup(str, equal_sign - str);
+		node->value = ft_strdup(equal_sign + 1);
 	}
 	else
 	{
-		node->key = strdup(str);
+		node->key = ft_strdup(str);
 		node->value = NULL;
 	}
 	node->next = NULL;

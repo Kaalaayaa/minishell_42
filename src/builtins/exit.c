@@ -66,14 +66,18 @@ int	builtin_exit(char **argv, t_shell *shell)
 		exit(exit_status);
 	if (argv[2])
 	{
+		printf("exit\n");
 		print_error("minishell: exit: ", "too many arguments\n", NULL);
 		return (1);
 	}
 	if (!is_valid_exit_nbr(argv[1]))
 	{
-		print_error("minishell: exit: ", "numeric argument required\n", NULL);
+		printf("exit\n");
+		print_error("minishell: exit: ", argv[1],
+			": numeric argument required\n");
 		exit(2);
 	}
 	exit_status = get_exit_status(argv[1]);
+	printf("exit\n");
 	exit(exit_status);
 }

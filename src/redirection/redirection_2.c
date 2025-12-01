@@ -6,7 +6,7 @@
 /*   By: kchatela <kchatela@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/24 15:23:35 by pdangwal          #+#    #+#             */
-/*   Updated: 2025/11/20 15:34:04 by kchatela         ###   ########.fr       */
+/*   Updated: 2025/12/01 17:27:48 by kchatela         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,10 +27,11 @@ void	delete_line(char **argv, int index)
 	}
 }
 
-static char	*heredoc_collect(const char *file)
+static char	*heredoc_collect(t_shell *shell, const char *file)
 {
 	char	*line;
 	char	*new;
+	char	*line_number;
 
 	new = ft_strdup("");
 	if (!new)
@@ -38,11 +39,12 @@ static char	*heredoc_collect(const char *file)
 	while (1)
 	{
 		line = readline("> ");
+		line_number = ft_itoa(shell->line_number);
 		if (!line)
 		{
-			print_error("minishell: warning: here-document delimited by",
-				" end-of-file (wanted `", (char *)file);
-			print_error("')\n", NULL, NULL);
+			print_error("minishell: warning: here-document at line ",
+				line_number, " delimited by end-of-file (wanted `");
+			print_error((char *)file, "')\n", NULL);
 			break ;
 		}
 		if (ft_strcmp(line, file) == 0)
@@ -53,12 +55,12 @@ static char	*heredoc_collect(const char *file)
 	return (ft_strtrim_free(new, "\n"));
 }
 
-static void	heredoc_child(const char *file, int fdw)
+static void	heredoc_child(t_shell *shell, const char *file, int fdw)
 {
 	char	*new;
 
 	setup_signals_heredoc();
-	new = heredoc_collect(file);
+	new = heredoc_collect(shell, file);
 	if (new)
 		write(fdw, new, ft_strlen(new));
 	close(fdw);
@@ -101,7 +103,7 @@ char	*get_heredoc(char *file, t_shell *shell)
 	if (pid == 0)
 	{
 		close(fd[0]);
-		heredoc_child(file, fd[1]);
+		heredoc_child(shell, file, fd[1]);
 	}
 	close(fd[1]);
 	return (heredoc_parent(fd[0], pid, shell));

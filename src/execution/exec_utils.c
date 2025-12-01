@@ -28,7 +28,7 @@ char	*get_path_env(t_shell *shell)
 	t_env	*env;
 
 	env = shell->env_list;
-	while (env->key)
+	while (env && env->key)
 	{
 		if (ft_strncmp(env->key, "PATH", 4) == 0)
 			return (env->value);
