@@ -1,6 +1,6 @@
 NAME = minishell
-CC = gcc
-CFLAGS = -Wall -Wextra -Werror -Iincludes -g 
+CC = cc
+CFLAGS = -Wall -Wextra -Werror -Iincludes 
 
 # Source files
 SRCS = src/main.c  src/lexer/lexing.c src/lexer/lexer_utils.c \

@@ -6,7 +6,7 @@
 /*   By: kchatela <kchatela@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/24 15:23:35 by pdangwal          #+#    #+#             */
-/*   Updated: 2025/11/20 15:34:04 by kchatela         ###   ########.fr       */
+/*   Updated: 2025/12/01 17:27:48 by kchatela         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ static char	*heredoc_collect(t_shell *shell, const char *file)
 		{
 			print_error("minishell: warning: here-document at line ",
 				line_number, " delimited by end-of-file (wanted `");
-			print_error((char *)file, "')", NULL);
+			print_error((char *)file, "')\n", NULL);
 			break ;
 		}
 		if (ft_strcmp(line, file) == 0)
