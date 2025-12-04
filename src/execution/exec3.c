@@ -75,3 +75,27 @@ int	check_path_unset(t_tree *tree, t_shell *shell, char **envp, char *path)
 	}
 	return (0);
 }
+
+void	handle_pipe_status(int status, t_shell *shell)
+{
+	if (WIFEXITED(status))
+		shell->exit_status = WEXITSTATUS(status);
+	else if (WIFSIGNALED(status))
+	{
+		shell->exit_status = 128 + WTERMSIG(status);
+		if (WTERMSIG(status) == SIGQUIT)
+			write(2, "Quit (core dumped)\n", 19);
+	}
+}
+
+void	handle_cmd_signal(int status, t_shell *shell)
+{
+	if (WIFSIGNALED(status) && WTERMSIG(status) == SIGINT)
+	{
+		write(1, "\n", 1);
+		rl_on_new_line();
+	}
+	update_exit_status(status, shell);
+	if (!shell->in_pipe && WIFSIGNALED(status) && WTERMSIG(status) == SIGQUIT)
+		write(2, "Quit (core dumped)\n", 19);
+}

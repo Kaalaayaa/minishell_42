@@ -12,27 +12,16 @@
 
 #include "minishell.h"
 
-static void	process_char(int *idx, int *j, char *in_quote, char *res)
+static void	handle_marker(char *str, int *i, char *res, int *j)
 {
-	char	*str;
+	(*i)++;
+	res[(*j)++] = str[*i];
+}
 
-	str = res;
-	if (*in_quote == '"' && str[*idx] == '\\' && str[*idx + 1])
-	{
-		res[*j] = str[++(*idx)];
-		(*j)++;
-	}
-	else
-	{
-		update_quote(str[*idx], in_quote);
-		if (!((str[*idx] == '\'' || str[*idx] == '"')
-				&& (*in_quote == 0 || *in_quote == str[*idx])))
-		{
-			res[*j] = str[*idx];
-			(*j)++;
-		}
-	}
-	(*idx)++;
+static void	handle_escape(char *str, int *i, char *res, int *j)
+{
+	res[*j] = str[++(*i)];
+	(*j)++;
 }
 
 static char	*remove_quotes(char *str)
@@ -47,12 +36,25 @@ static char	*remove_quotes(char *str)
 	res = malloc(ft_strlen(str) + 1);
 	if (!res)
 		return (NULL);
-	ft_strlcpy(res, str, ft_strlen(str) + 1);
 	i = 0;
 	j = 0;
 	in_quote = 0;
 	while (str[i])
-		process_char(&i, &j, &in_quote, res);
+	{
+		if (str[i] == '\x1f')
+			handle_marker(str, &i, res, &j);
+		else if (in_quote == '"' && str[i] == '\\' && str[i + 1])
+			handle_escape(str, &i, res, &j);
+		else if ((str[i] == '\'' || str[i] == '"')
+			&& (in_quote == 0 || in_quote == str[i]))
+			update_quote(str[i], &in_quote);
+		else
+		{
+			res[j] = str[i];
+			j++;
+		}
+		i++;
+	}
 	res[j] = '\0';
 	return (res);
 }

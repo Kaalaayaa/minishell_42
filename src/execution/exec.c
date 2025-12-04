@@ -19,11 +19,9 @@ void	exec_pipe(t_tree *tree, t_shell *shell)
 	pid_t	right_pid;
 	int		status;
 
-	if (!tree || !shell)
+	if (!tree || !shell || pipe(fd) == -1)
 		return ;
 	shell->in_pipe = true;
-	if (pipe(fd) == -1)
-		return ;
 	left_pid = fork();
 	if (left_pid == 0)
 		pipe_end(fd, 0, tree, shell);
@@ -34,11 +32,8 @@ void	exec_pipe(t_tree *tree, t_shell *shell)
 	close(fd[1]);
 	waitpid(left_pid, NULL, 0);
 	waitpid(right_pid, &status, 0);
-	if (WIFEXITED(status))
-		shell->exit_status = WEXITSTATUS(status);
-	else if (WIFSIGNALED(status))
-		shell->exit_status = 128 + WTERMSIG(status);
 	shell->in_pipe = false;
+	handle_pipe_status(status, shell);
 }
 
 void	execute_foreign(char **envp, char *path, t_tree *tree)
@@ -71,20 +66,22 @@ void	exec_cmd(t_tree *tree, t_shell *shell)
 
 	if (!tree || !tree->argv || !tree->argv[0])
 		return ;
-	if (handle_var_assignment(tree, shell))
-		return ;
-	if (run_parent_builtin(tree, shell))
+	if (handle_var_assignment(tree, shell) || run_parent_builtin(tree, shell))
 		return ;
 	envp = get_envp(shell->env_list);
 	path = get_path(tree->argv[0], shell);
 	if (check_path_unset(tree, shell, envp, path))
 		return ;
+	if (!shell->in_pipe)
+		setup_signals_parent();
 	pid = fork();
 	if (pid == 0)
 		child_exec(tree, shell, envp, path);
 	waitpid(pid, &status, 0);
+	if (!shell->in_pipe)
+		setup_signals_prompt();
 	free_exec_resources(envp, path);
-	update_exit_status(status, shell);
+	handle_cmd_signal(status, shell);
 }
 
 void	exec_with_redir(t_tree *tree, t_shell *shell)

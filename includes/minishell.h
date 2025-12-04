@@ -181,6 +181,8 @@ void			free_exec_resources(char **envp, char *path);
 void			verify_path(char **envp, char *path, t_tree *tree);
 void			write_lines(char *argv);
 void			update_exit_status(int status, t_shell *shell);
+void			handle_pipe_status(int status, t_shell *shell);
+void			handle_cmd_signal(int status, t_shell *shell);
 void			print_and_exit(char *s1, char *s2, char *s3, int exitcode);
 int				env_count(t_env *env);
 char			*env_join(char *key, char *value);
