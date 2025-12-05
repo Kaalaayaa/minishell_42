@@ -74,6 +74,7 @@ int	run_parent_builtin(t_tree *tree, t_shell *shell)
 
 void	child_exec(t_tree *tree, t_shell *shell, char **envp, char *path)
 {
+	close_fd_in_range(2, 1024);
 	setup_signals_child();
 	if (is_builtin(tree->argv[0]))
 	{

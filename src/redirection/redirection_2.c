@@ -45,8 +45,10 @@ static char	*heredoc_collect(t_shell *shell, const char *file)
 			print_error("minishell: warning: here-document at line ",
 				line_number, " delimited by end-of-file (wanted `");
 			print_error((char *)file, "')", NULL);
+			free(line_number);
 			break ;
 		}
+		free(line_number);
 		if (ft_strcmp(line, file) == 0)
 			return (free(line), ft_strtrim_free(new, "\n"));
 		new = ft_strjoin_free(new, "\n", 1);
@@ -99,7 +101,11 @@ char	*get_heredoc(char *file, t_shell *shell)
 		return (NULL);
 	pid = fork();
 	if (pid == -1)
+	{
+		close(fd[0]);
+		close(fd[1]);
 		return (NULL);
+	}
 	if (pid == 0)
 	{
 		close(fd[0]);

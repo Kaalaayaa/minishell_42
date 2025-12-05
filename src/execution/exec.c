@@ -23,9 +23,21 @@ void	exec_pipe(t_tree *tree, t_shell *shell)
 		return ;
 	shell->in_pipe = true;
 	left_pid = fork();
+	if (left_pid == -1)
+	{
+		close(fd[0]);
+		close(fd[1]);
+		return ;
+	}
 	if (left_pid == 0)
 		pipe_end(fd, 0, tree, shell);
 	right_pid = fork();
+	if (right_pid == -1)
+	{
+		close(fd[0]);
+		close(fd[1]);
+		return ;
+	}
 	if (right_pid == 0)
 		pipe_end(fd, 1, tree, shell);
 	close(fd[0]);
@@ -75,6 +87,8 @@ void	exec_cmd(t_tree *tree, t_shell *shell)
 	if (!shell->in_pipe)
 		setup_signals_parent();
 	pid = fork();
+	if (pid == -1)
+		return ; // check later;
 	if (pid == 0)
 		child_exec(tree, shell, envp, path);
 	waitpid(pid, &status, 0);

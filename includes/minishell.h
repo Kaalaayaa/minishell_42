@@ -196,6 +196,7 @@ void			execute_foreign(char **envp, char *path, t_tree *tree);
 int				handle_var_assignment(t_tree *tree, t_shell *shell);
 int				check_path_unset(t_tree *tree, t_shell *shell, char **envp,
 					char *path);
+void			close_fd_in_range(int a, int b);
 
 /* ************************** */
 /*          SIGNALS             */

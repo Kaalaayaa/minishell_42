@@ -15,9 +15,18 @@
 void	write_lines(char *argv)
 {
 	int	fd[2];
+	pid_t	pid;
 
-	pipe(fd);
-	if (fork() == 0)
+	if (pipe(fd) == -1)
+		return ;
+	pid = fork();
+	if (pid == -1)
+	{
+		close(fd[0]);
+		close(fd[1]);
+		return ;
+	}
+	if (pid == 0)
 	{
 		close(fd[0]);
 		write(fd[1], argv, ft_strlen(argv));
@@ -30,6 +39,7 @@ void	write_lines(char *argv)
 		close(fd[1]);
 		dup2(fd[0], STDIN_FILENO);
 		close(fd[0]);
+		waitpid(pid, NULL, 0);
 	}
 }
 
