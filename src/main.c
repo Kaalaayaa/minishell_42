@@ -60,6 +60,7 @@ int	main(int argc, char **argv, char **envp)
 		if (!line)
 		{
 			cleanup(NULL, NULL, &shell);
+			close_fd_in_range(2, 1024);
 			printf("exit\n");
 			break ;
 		}

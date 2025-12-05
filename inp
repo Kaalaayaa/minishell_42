@@ -1,0 +1,72 @@
+{ 
+    readline()
+    Memcheck:Leak
+    ...
+    fun:readline
+}
+{
+    add_history()
+    Memcheck:Leak
+    ...
+    fun:add_history
+}
+{
+    ls
+    Memcheck:Leak
+    ...
+    obj:/usr/bin/ls
+}
+{
+    date
+    Memcheck:Leak
+    ...
+    obj:/usr/bin/date
+}
+{
+    grep
+    Memcheck:Leak
+    ...
+    obj:/usr/bin/grep
+}
+{
+    yes
+    Memcheck:Leak
+    ...
+    obj:/usr/bin/yes
+}
+{
+    cat
+    Memcheck:Leak
+    ...
+    obj:/usr/bin/cat
+}
+{
+    tail
+    Memcheck:Leak
+    ...
+    obj:/usr/bin/tail
+}
+{
+    more
+    Memcheck:Leak
+    ...
+    obj:/usr/bin/more
+}
+{
+    clear
+    Memcheck:Leak
+    ...
+    obj:/usr/bin/clear
+}
+{
+    dash
+    Memcheck:Leak
+    ...
+    obj:/usr/bin/dash
+}
+{
+    sort
+    Memcheck:Leak
+    ...
+    obj:/usr/bin/sort
+}
