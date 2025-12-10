@@ -50,9 +50,9 @@ int	builtin_cd(char **argv, t_shell *shell)
 	int		print_path;
 
 	print_path = 0;
-	if (argv[2])
+	if (argv[1] && argv[2])
 	{
-		print_error("minishell: cd: ", "too many arguments\n", NULL);
+		print_error(2, "minishell: cd: %s", "too many arguments\n");
 		return (1);
 	}
 	if (getcwd(oldcwd, sizeof(oldcwd)) == NULL)

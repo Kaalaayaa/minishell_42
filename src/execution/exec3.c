@@ -65,9 +65,10 @@ int	check_path_unset(t_tree *tree, t_shell *shell, char **envp, char *path)
 		if (access(cmd_path, F_OK) != 0)
 		{
 			free_exec_resources(envp, path);
-			print_error("minishell: ", tree->argv[0],
+			print_error(2, "minishell: %s%s", tree->argv[0],
 				": No such file or directory\n");
-			free(cmd_path);
+			if (cmd_path)
+				free(cmd_path);
 			shell->exit_status = 127;
 			return (1);
 		}

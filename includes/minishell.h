@@ -108,6 +108,7 @@ int				redir_allocation(t_redir *redir, t_shell *shell);
 char			*get_heredoc(char *file, t_shell *shell);
 void			delete_line(char **argv, int index);
 void			print_heredoc_error(char *line_number, const char *file);
+int				start_redirections(t_tree *tree, t_shell *shell);
 
 /* ************************** */
 /*          LEXER              */
@@ -194,6 +195,7 @@ char			**get_envp(t_env *env);
 int				run_parent_builtin(t_tree *tree, t_shell *shell);
 void			child_exec(t_tree *tree, t_shell *shell,
 					char **envp, char *path);
+void	exec_pipe(t_tree *tree, t_shell *shell);
 void			pipe_end(int *fd, int side, t_tree *tree, t_shell *shell);
 void			execute_foreign(char **envp, char *path, t_tree *tree);
 int				handle_var_assignment(t_tree *tree, t_shell *shell);
@@ -238,6 +240,6 @@ void			free_exec_resources(char **envp, char *path);
 /* ************************** */
 
 char			*ft_strtrim_free(char *src, const char *set);
-void			print_error(char *s1, char *s2, char *s3);
-
+//void			print_error(char *s1, char *s2, char *s3);
+void			print_error(int fd, char *set, ...);
 #endif

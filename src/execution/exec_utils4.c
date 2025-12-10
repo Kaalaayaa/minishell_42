@@ -11,7 +11,7 @@
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
-
+/*
 int	pipe_init_and_left_fork(t_tree *tree, t_shell *shell,
 	int fd[2], pid_t *left_pid)
 {
@@ -46,6 +46,7 @@ int	pipe_right_fork(t_shell *shell, int fd[2],
 		pipe_end(fd, 1, shell->tree, shell);
 	return (0);
 }
+*/
 
 void	pipe_cleanup_and_status(t_shell *shell,
 	int fd[2], pid_t left_pid, pid_t right_pid)
@@ -63,6 +64,6 @@ void	pipe_cleanup_and_status(t_shell *shell,
 
 void	print_and_exit(char *s1, char *s2, char *s3, int exitcode)
 {
-	print_error(s1, s2, s3);
+	print_error(2, "%s%s%s",s1, s2, s3);
 	exit(exitcode);
 }

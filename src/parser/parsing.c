@@ -110,7 +110,7 @@ t_tree	*parse_e(t_token **head, t_shell *shell)
 	return (left);
 }
 
-/*
+
 void	print_tree(t_tree *node, int depth)
 {
 	if (!node)
@@ -134,4 +134,4 @@ void	print_tree(t_tree *node, int depth)
 		print_tree(node->left, depth + 1);
 	if (node->right)
 		print_tree(node->right, depth + 1);
-}*/
+}//*/

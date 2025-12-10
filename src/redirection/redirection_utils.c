@@ -19,8 +19,7 @@ int	redir_append(char *file, t_shell *shell)
 	fd = open(file, O_WRONLY | O_CREAT | O_APPEND, 0644);
 	if (fd < 0)
 	{
-		print_error("minishell: ", file, ": ");
-		print_error(strerror(errno), "\n", NULL);
+		print_error(2, "minishell: %s%s%s%s", file, ": ", strerror(errno), "\n");
 		shell->exit_status = 1;
 		return (0);
 	}
@@ -38,8 +37,7 @@ int	redir_output(char *file, t_shell *shell)
 	fd = open(file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	if (fd < 0)
 	{
-		print_error("minishell: ", file, ": ");
-		print_error(strerror(errno), "\n", NULL);
+		print_error(2, "minishell: %s%s%s%s", file, ": ", strerror(errno), "\n");
 		shell->exit_status = 1;
 		return (0);
 	}
@@ -55,8 +53,7 @@ int	redir_input(char *file, t_shell *shell)
 	fd = open(file, O_RDONLY);
 	if (fd < 0)
 	{
-		print_error("minishell: ", file, ": ");
-		print_error(strerror(errno), "\n", NULL);
+		print_error(2, "minishell: %s: %s\n", file, strerror(errno));
 		shell->exit_status = 1;
 		return (0);
 	}
@@ -67,8 +64,7 @@ int	redir_input(char *file, t_shell *shell)
 
 void	print_heredoc_error(char *line_number, const char *file)
 {
-	print_error("minishell: warning: here-document at line ",
-		line_number, " delimited by end-of-file (wanted `");
-	print_error((char *)file, "')", NULL);
+	print_error(2, "minishell: warning: here-document at line %s%s%s%s",
+		line_number, " delimited by end-of-file (wanted `", (char *)file, "')");
 	free(line_number);
 }

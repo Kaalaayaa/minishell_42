@@ -29,10 +29,7 @@ int	exec_cmd_setup(t_tree *tree, t_shell *shell,
 	*envp = get_envp(shell->env_list);
 	*path = get_path(tree->argv[0], shell);
 	if (check_path_unset(tree, shell, *envp, *path))
-	{
-		free_exec_resources(*envp, *path);
 		return (1);
-	}
 	if (!shell->in_pipe)
 		setup_signals_parent();
 	return (0);
