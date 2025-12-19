@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../includes/minishell.h"
 
 static size_t	get_env_var_value(const char *s, size_t i, t_shell *sh,
 	char **res)
@@ -34,7 +34,7 @@ static size_t	get_env_var_value(const char *s, size_t i, t_shell *sh,
 	return (j);
 }
 
-static size_t	handle_env(const char *s, size_t i, t_shell *sh, char **res)
+size_t	handle_env(const char *s, size_t i, t_shell *sh, char **res)
 {
 	char	*pid_str;
 
@@ -50,7 +50,7 @@ static size_t	handle_env(const char *s, size_t i, t_shell *sh, char **res)
 	return (get_env_var_value(s, i, sh, res));
 }
 
-static size_t	copy_plain_text(const char *s, size_t i, char **res)
+size_t	copy_plain_text(const char *s, size_t i, char **res)
 {
 	size_t	j;
 	char	*part;
@@ -71,39 +71,6 @@ static size_t	copy_plain_text(const char *s, size_t i, char **res)
 	append_and_free(res, part);
 	free(part);
 	return (j);
-}
-
-static int	handle_single_sign(size_t i, char **res)
-{
-	append_and_free(res, "$");
-	i = i + 1;
-	return (i);
-}
-
-static size_t	handle_double_quote(const char *str, size_t i, t_shell *shell,
-	char **res)
-{
-	size_t	j;
-	char	*content;
-	char	*expanded;
-
-	j = i + 1;
-	while (str[j] && str[j] != '"')
-	{
-		if (str[j] == '\\' && str[j + 1])
-			j++;
-		j++;
-	}
-	content = ft_substr(str, i + 1, j - i - 1);
-	expanded = expand_env_inside_dquote(content, shell);
-	append_and_free(res, expanded);
-	free(expanded);
-	free(content);
-	if (str[j] == '"')
-		i = j + 1;
-	else
-		i = j;
-	return (i);
 }
 
 static size_t	process_expand_char(const char *str, size_t i, t_shell *shell,

@@ -6,7 +6,7 @@
 /*   By: kchatela <kchatela@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/21 09:34:36 by pdangwal          #+#    #+#             */
-/*   Updated: 2025/12/05 20:07:20 by kchatela         ###   ########.fr       */
+/*   Updated: 2025/12/19 17:47:47 by pdangwal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,6 +94,13 @@ typedef struct s_shell
 	int				exit_status;
 }			t_shell;
 
+typedef struct s_fmt
+{
+	char			*buf;
+	int				pos;
+	va_list			*list;
+}	t_fmt;
+
 /* ************************** */
 /*         REDIRECTION        */
 /* ************************** */
@@ -109,6 +116,9 @@ char			*get_heredoc(char *file, t_shell *shell);
 void			delete_line(char **argv, int index);
 void			print_heredoc_error(char *line_number, const char *file);
 int				start_redirections(t_tree *tree, t_shell *shell);
+t_redir			*add_redir_node(void);
+void			alot_redirection(t_redir **ret,
+					char **argv, int index, t_shell *shell);
 
 /* ************************** */
 /*          LEXER              */
@@ -135,6 +145,9 @@ t_token			*expander(t_token *tokens, t_shell *shell);
 char			*expand_env(const char *s, t_shell *shell);
 char			*expand_env_inside_dquote(const char *str, t_shell *shell);
 size_t			handle_single_quote(const char *str, size_t i, char **res);
+int				handle_single_sign(size_t i, char **res);
+size_t			handle_double_quote(const char *str, size_t i, t_shell *shell,
+					char **res);
 char			*extract_env_key(char *s);
 void			append_and_free(char **res, const char *add);
 void			append_env_value(char **res, char *value);
@@ -196,7 +209,7 @@ char			**get_envp(t_env *env);
 int				run_parent_builtin(t_tree *tree, t_shell *shell);
 void			child_exec(t_tree *tree, t_shell *shell,
 					char **envp, char *path);
-void	exec_pipe(t_tree *tree, t_shell *shell);
+void			exec_pipe(t_tree *tree, t_shell *shell);
 void			pipe_end(int *fd, int side, t_tree *tree, t_shell *shell);
 void			execute_foreign(char **envp, char *path, t_tree *tree);
 int				handle_var_assignment(t_tree *tree, t_shell *shell);
@@ -243,4 +256,7 @@ void			free_exec_resources(char **envp, char *path);
 char			*ft_strtrim_free(char *src, const char *set);
 //void			print_error(char *s1, char *s2, char *s3);
 void			print_error(int fd, char *set, ...);
+int				handle_format_string(char *buf, int pos, va_list *list);
+int				process_special_char(char *set, int i, t_fmt *fmt);
+int				process_format(char *set, int *i, t_fmt *fmt);
 #endif

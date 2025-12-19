@@ -1,58 +1,41 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   print_error.c                                      :+:      :+:    :+:   */
+/*   exec_envp.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: pdangwal <pdangwal@student.42berlin.d      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/12/19 16:55:59 by pdangwal          #+#    #+#             */
+/*   Created: 2025/12/19 17:10:00 by pdangwal          #+#    #+#             */
 /*   Updated: 2025/12/19 17:10:00 by pdangwal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
 
-int	handle_format_string(char *buf, int pos, va_list *list)
+char	**get_envp(t_env *env)
 {
-	char	*str;
+	char	**ret;
+	t_env	*tmp;
+	int		count;
 	int		i;
 
-	if (!list)
-		return (0);
-	str = va_arg(*list, char *);
-	if (!str)
-		return (0);
+	count = env_count(env);
+	ret = malloc(sizeof(char *) * (count + 1));
+	if (!ret)
+		return (NULL);
+	tmp = env;
 	i = 0;
-	while (str[i] && pos + i < 4095)
+	while (tmp)
 	{
-		buf[pos + i] = str[i];
+		ret[i] = env_join(tmp->key, tmp->value);
+		if (!ret[i])
+		{
+			free_split(ret);
+			return (NULL);
+		}
 		i++;
+		tmp = tmp->next;
 	}
-	return (i);
-}
-
-void	print_error(int fd, char *set, ...)
-{
-	char	buffer[4096];
-	va_list	list;
-	t_fmt	fmt;
-	int		i;
-	int		written;
-
-	i = 0;
-	fmt.buf = buffer;
-	fmt.pos = 0;
-	fmt.list = &list;
-	va_start(list, set);
-	while (set[i] && fmt.pos < 4095)
-	{
-		written = process_format(set, &i, &fmt);
-		if (written == -1)
-			break ;
-		fmt.pos += written;
-		i++;
-	}
-	va_end(list);
-	if (fmt.pos > 0)
-		write(fd, buffer, fmt.pos);
+	ret[i] = NULL;
+	return (ret);
 }

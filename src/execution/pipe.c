@@ -1,3 +1,14 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   pipe.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: pdangwal <pdangwal@student.42berlin.d      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/12/19 16:45:23 by pdangwal          #+#    #+#             */
+/*   Updated: 2025/12/19 16:45:28 by pdangwal         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include "../includes/minishell.h"
 
@@ -41,7 +52,8 @@ static pid_t	fork_pipe_left(t_tree *tree, t_shell *shell, int fd[2])
 }
 
 // Forks and executes the right side of the pipe
-static pid_t	fork_pipe_right(t_tree *tree, t_shell *shell, int fd[2], pid_t left_pid)
+static pid_t	fork_pipe_right(t_tree *tree, t_shell *shell,
+	int fd[2], pid_t left_pid)
 {
 	pid_t	right_pid;
 

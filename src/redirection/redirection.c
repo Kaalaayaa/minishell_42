@@ -39,85 +39,24 @@ int	is_redirection(char *argv)
 	return (0);
 }
 
-void	alot_redirection(t_redir **ret, char **argv, int index, t_shell *shell)
+int	start_redirections(t_tree *tree, t_shell *shell)
 {
-	if (ft_strcmp(argv[index], ">") == 0)
-		(*ret)->type = REDIR_OUT;
-	else if (ft_strcmp(argv[index], ">>") == 0)
-		(*ret)->type = REDIR_APPEND;
-	else if (ft_strcmp(argv[index], "<") == 0)
-		(*ret)->type = REDIR_IN;
-	else if (ft_strcmp(argv[index], "<<") == 0)
+	t_redir	*redirections;
+
+	if (!tree || !tree->argv)
+		return (1);
+	redirections = apply_redirections(tree->argv, shell);
+	if (!redirections)
+		return (0);
+	while (redirections)
 	{
-		(*ret)->type = REDIR_HEREDOC;
-		(*ret)->filename = get_heredoc(argv[index + 1], shell);
-		delete_line(argv, index);
-		delete_line(argv, index);
-		return ;
-	}
-	if (ft_strcmp(argv[index + 1], "$EMPTY") == 0)
-		(*ret)->filename = ft_strdup("$EMPTY");
-	else
-		(*ret)->filename = ft_strdup(argv[index + 1]);
-	delete_line(argv, index);
-	delete_line(argv, index);
-}
-
-static int	create_and_append_redir(t_redir **ret, t_redir **head,
-		char **argv, t_shell *shell)
-{
-	t_redir	*new_node;
-	int		index;
-
-	index = 0;
-	while (argv[index] && !is_redirection(argv[index]))
-		index++;
-	new_node = add_redir_node();
-	if (!new_node)
-		return (free_redir(*head), 0);
-	if (!*ret)
-		*head = new_node;
-	else
-		(*ret)->next = new_node;
-	*ret = new_node;
-	alot_redirection(ret, argv, index, shell);
-	return (1);
-}
-
-static int	process_redir_arg(t_redir **ret, t_redir **head, char **argv,
-	int i, t_shell *shell)
-{
-	if (argv[i + 1] && ft_strcmp(argv[i + 1], "$EMPTY") != 0 &&
-		argv[i + 1][0] != '\0')
-		return (create_and_append_redir(ret, head, argv, shell));
-	else if (argv[i + 1] && ft_strcmp(argv[i + 1], "$EMPTY") == 0)
-		return (create_and_append_redir(ret, head, argv, shell));
-	else if (argv[i + 1])
-	{
-		delete_line(argv, i);
-		delete_line(argv, i);
-	}
-	return (1);
-}
-
-t_redir	*apply_redirections(char **argv, t_shell *shell)
-{
-	t_redir	*ret;
-	t_redir	*head;
-	int		i;
-
-	ret = NULL;
-	head = NULL;
-	i = 0;
-	while (argv[i])
-	{
-		if (is_redirection(argv[i]))
+		if (!redir_allocation(redirections, shell))
 		{
-			if (!process_redir_arg(&ret, &head, argv, i, shell))
-				return (NULL);
+			free_redir(redirections);
+			return (0);
 		}
-		else
-			i++;
+		redirections = redirections->next;
 	}
-	return (head);
+	free_redir(redirections);
+	return (1);
 }

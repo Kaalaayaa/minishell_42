@@ -83,13 +83,3 @@ char	**check_path(char *argv, t_shell *shell)
 	paths = ft_split(path_env, ':');
 	return (paths);
 }
-
-void	close_fd_in_range(int a, int b)
-{
-	a++;
-	while (a < b)
-	{
-		close(a);
-		a++;
-	}
-}

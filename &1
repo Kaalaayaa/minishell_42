@@ -1,2 +1,0 @@
-minishell% ls > $VAR
-minishell% exit
