@@ -52,13 +52,23 @@ void	pipe_cleanup_and_status(t_shell *shell,
 	int fd[2], pid_t left_pid, pid_t right_pid)
 {
 	int	status;
+	int	left_status;
 
 	close(fd[0]);
 	close(fd[1]);
-	waitpid(left_pid, NULL, 0);
+	waitpid(left_pid, &left_status, 0);
 	waitpid(right_pid, &status, 0);
 	shell->in_pipe = false;
 	setup_signals_prompt();
+	if (isatty(STDOUT_FILENO) && 
+		((WIFSIGNALED(left_status) && WTERMSIG(left_status) == SIGINT) ||
+		 (WIFEXITED(left_status) && WEXITSTATUS(left_status) == 130) ||
+		 (WIFSIGNALED(status) && WTERMSIG(status) == SIGINT) ||
+		 (WIFEXITED(status) && WEXITSTATUS(status) == 130)))
+	{
+		write(1, "\n", 1);
+		rl_on_new_line();
+	}
 	handle_pipe_status(status, shell);
 }
 

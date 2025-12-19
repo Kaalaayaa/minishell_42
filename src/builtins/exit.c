@@ -15,8 +15,10 @@
 int	is_valid_exit_nbr(const char *str)
 {
 	int	i;
+	int	digit_count;
 
 	i = 0;
+	digit_count = 0;
 	if (!str || !str[0])
 		return (0);
 	if (str[i] == '+' || str[i] == '-')
@@ -27,8 +29,11 @@ int	is_valid_exit_nbr(const char *str)
 	{
 		if (!ft_isdigit(str[i]))
 			return (0);
+		digit_count++;
 		i++;
 	}
+	if (digit_count > 20)
+		return (0);
 	return (1);
 }
 
@@ -72,21 +77,21 @@ int	builtin_exit(char **argv, t_shell *shell)
 	int	exit_status;
 
 	exit_status = shell->exit_status;
-
 	if (!argv[1])
 	{
+		printf("exit\n");
 		close_fd_in_range(2, 1024);
 		cleanup(shell->tokens, shell->tree, shell);
 		exit(exit_status);
 	}
+	if (!is_valid_exit_nbr(argv[1]))
+		invalid_nbr_exit(argv, shell);
 	if (argv[2])
 	{
 		printf("exit\n");
 		print_error(2, "minishell: exit: %s", "too many arguments\n");
-		return (1);
+		return (127);
 	}
-	if (!is_valid_exit_nbr(argv[1]))
-		invalid_nbr_exit(argv, shell);
 	exit_status = get_exit_status(argv[1]);
 	printf("exit\n");
 	close_fd_in_range(2, 1024);

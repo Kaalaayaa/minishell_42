@@ -84,9 +84,7 @@ void	handle_pipe_status(int status, t_shell *shell)
 	else if (WIFSIGNALED(status))
 	{
 		shell->exit_status = 128 + WTERMSIG(status);
-		if (WTERMSIG(status) == SIGINT)
-			write(1, "\n", 1);
-		else if (WTERMSIG(status) == SIGQUIT)
+		if (WTERMSIG(status) == SIGQUIT && isatty(STDERR_FILENO))
 			write(2, "Quit (core dumped)\n", 19);
 	}
 }

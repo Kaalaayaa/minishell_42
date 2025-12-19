@@ -14,6 +14,12 @@
 
 int	redir_allocation(t_redir *redirections, t_shell *shell)
 {
+	if (!redirections->filename || redirections->filename[0] == '\0')
+	{
+		print_error(2, "minishell: %s\n", "ambiguous redirect");
+		shell->exit_status = 1;
+		return (0);
+	}
 	if (redirections->type == REDIR_APPEND)
 	{
 		if (!redir_append(redirections->filename, shell))

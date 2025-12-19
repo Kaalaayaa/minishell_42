@@ -37,9 +37,17 @@ static size_t	handle_dquote_var(const char *str, size_t i, t_shell *shell,
 	size_t	j;
 	char	*name;
 	char	*value;
+	char	*pid_str;
 
 	if (str[i + 1] == '?')
 		return (i + env_exit_status(shell, res));
+	if (str[i + 1] == '$')
+	{
+		pid_str = ft_itoa(getpid());
+		append_and_free(res, pid_str);
+		free(pid_str);
+		return (i + 2);
+	}
 	j = i + 1;
 	while (str[j] && (ft_isalnum(str[j]) || str[j] == '_'))
 		j++;

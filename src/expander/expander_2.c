@@ -17,9 +17,17 @@ static size_t	handle_env(const char *s, size_t i, t_shell *sh, char **res)
 	size_t	j;
 	char	*name;
 	char	*value;
+	char	*pid_str;
 
 	if (s[i + 1] == '?')
 		return (i + env_exit_status(sh, res));
+	if (s[i + 1] == '$')
+	{
+		pid_str = ft_itoa(getpid());
+		append_and_free(res, pid_str);
+		free(pid_str);
+		return (i + 2);
+	}
 	j = i + 1;
 	while (s[j] && (ft_isalnum(s[j]) || s[j] == '_'))
 		j++;
