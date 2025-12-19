@@ -46,6 +46,30 @@ char	*full_path(char *argv)
 	return (NULL);
 }
 
+void	filter_empty_args(char **argv)
+{
+	int	i;
+	int	j;
+
+	if (!argv)
+		return ;
+	i = 0;
+	while (argv[i])
+	{
+		if (ft_strcmp(argv[i], "$EMPTY") == 0)
+		{
+			j = i;
+			while (argv[j])
+			{
+				argv[j] = argv[j + 1];
+				j++;
+			}
+		}
+		else
+			i++;
+	}
+}
+
 char	**check_path(char *argv, t_shell *shell)
 {
 	char	*path_env;

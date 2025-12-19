@@ -178,6 +178,7 @@ void			ft_trim_end(char *arr, char c);
 char			*get_path(char *argv, t_shell *shell);
 char			*get_path_env(t_shell *shell);
 char			*full_path(char *argv);
+void			filter_empty_args(char **argv);
 char			**check_path(char *argv, t_shell *shell);
 void			check_slash_path(char **envp, char *path, t_tree *tree);
 void			check_normal_path(char **envp, char *path, t_tree *tree);

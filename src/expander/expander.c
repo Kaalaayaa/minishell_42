@@ -75,6 +75,11 @@ static void	refresh_token(t_token *token, t_shell *shell)
 	token->token = remove_quotes(token->token);
 	if (old && old != token->token)
 		free(old);
+	if (token->token && token->token[0] == '\0')
+	{
+		free(token->token);
+		token->token = ft_strdup("$EMPTY");
+	}
 }
 
 t_token	*expander(t_token *tokens, t_shell *shell)

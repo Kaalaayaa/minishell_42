@@ -12,22 +12,13 @@
 
 #include "minishell.h"
 
-static size_t	handle_env(const char *s, size_t i, t_shell *sh, char **res)
+static size_t	get_env_var_value(const char *s, size_t i, t_shell *sh,
+	char **res)
 {
 	size_t	j;
 	char	*name;
 	char	*value;
-	char	*pid_str;
 
-	if (s[i + 1] == '?')
-		return (i + env_exit_status(sh, res));
-	if (s[i + 1] == '$')
-	{
-		pid_str = ft_itoa(getpid());
-		append_and_free(res, pid_str);
-		free(pid_str);
-		return (i + 2);
-	}
 	j = i + 1;
 	while (s[j] && (ft_isalnum(s[j]) || s[j] == '_'))
 		j++;
@@ -41,6 +32,22 @@ static size_t	handle_env(const char *s, size_t i, t_shell *sh, char **res)
 	append_env_value(res, value);
 	free(name);
 	return (j);
+}
+
+static size_t	handle_env(const char *s, size_t i, t_shell *sh, char **res)
+{
+	char	*pid_str;
+
+	if (s[i + 1] == '?')
+		return (i + env_exit_status(sh, res));
+	if (s[i + 1] == '$')
+	{
+		pid_str = ft_itoa(getpid());
+		append_and_free(res, pid_str);
+		free(pid_str);
+		return (i + 2);
+	}
+	return (get_env_var_value(s, i, sh, res));
 }
 
 static size_t	copy_plain_text(const char *s, size_t i, char **res)
@@ -99,6 +106,21 @@ static size_t	handle_double_quote(const char *str, size_t i, t_shell *shell,
 	return (i);
 }
 
+static size_t	process_expand_char(const char *str, size_t i, t_shell *shell,
+	char **res)
+{
+	if (str[i] == '"')
+		return (handle_double_quote(str, i, shell, res));
+	else if (str[i] == '\'')
+		return (handle_single_quote(str, i, res));
+	else if (str[i] == '$' && !str[i + 1])
+		return (handle_single_sign(str[i], res));
+	else if (str[i] == '$')
+		return (handle_env(str, i, shell, res));
+	else
+		return (copy_plain_text(str, i, res));
+}
+
 char	*expand_env(const char *str, t_shell *shell)
 {
 	char	*res;
@@ -109,17 +131,6 @@ char	*expand_env(const char *str, t_shell *shell)
 	res = ft_strdup("");
 	i = 0;
 	while (str[i])
-	{
-		if (str[i] == '"')
-			i = handle_double_quote(str, i, shell, &res);
-		else if (str[i] == '\'')
-			i = handle_single_quote(str, i, &res);
-		else if (str[i] == '$' && !str[i + 1])
-			i = handle_single_sign(str[i], &res);
-		else if (str[i] == '$')
-			i = handle_env(str, i, shell, &res);
-		else
-			i = copy_plain_text(str, i, &res);
-	}
+		i = process_expand_char(str, i, shell, &res);
 	return (res);
 }

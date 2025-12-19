@@ -36,31 +36,24 @@ t_tree	*add_tree_node(char *dst, t_type s)
 	return (tree);
 }
 
-static int	count_words(t_token *tokens)
-{
-	int	count;
-
-	count = 0;
-	while (tokens && tokens->type == WORD)
-	{
-		if (ft_strcmp(tokens->token, "$EMPTY") != 0)
-			count++;
-		tokens = tokens->next;
-	}
-	return (count);
-}
-
 char	**parse_simple_command(t_token **tokens)
 {
 	char	**argv;
 	int		i;
+	int		count;
 
-	argv = malloc(sizeof(char *) * (count_words(*tokens) + 1));
+	count = 0;
+	t_token	*tmp = *tokens;
+	while (tmp && tmp->type == WORD)
+	{
+		count++;
+		tmp = tmp->next;
+	}
+	argv = malloc(sizeof(char *) * (count + 1));
 	i = 0;
 	while (*tokens && (*tokens)->type == WORD)
 	{
-		if (ft_strcmp((*tokens)->token, "$EMPTY") != 0)
-			argv[i++] = ft_strdup((*tokens)->token);
+		argv[i++] = ft_strdup((*tokens)->token);
 		*tokens = (*tokens)->next;
 	}
 	argv[i] = NULL;
@@ -110,7 +103,7 @@ t_tree	*parse_e(t_token **head, t_shell *shell)
 	return (left);
 }
 
-
+/*
 void	print_tree(t_tree *node, int depth)
 {
 	if (!node)

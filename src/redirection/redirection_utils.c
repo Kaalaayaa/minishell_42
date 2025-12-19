@@ -64,7 +64,7 @@ int	redir_input(char *file, t_shell *shell)
 
 void	print_heredoc_error(char *line_number, const char *file)
 {
-	print_error(2, "minishell: warning: here-document at line %s%s%s%s",
+	print_error(2, "minishell: warning: here-document at line %s%s%s%s\n",
 		line_number, " delimited by end-of-file (wanted `", (char *)file, "')");
 	free(line_number);
 }

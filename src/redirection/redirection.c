@@ -55,7 +55,10 @@ void	alot_redirection(t_redir **ret, char **argv, int index, t_shell *shell)
 		delete_line(argv, index);
 		return ;
 	}
-	(*ret)->filename = ft_strdup(argv[index + 1]);
+	if (ft_strcmp(argv[index + 1], "$EMPTY") == 0)
+		(*ret)->filename = ft_strdup("$EMPTY");
+	else
+		(*ret)->filename = ft_strdup(argv[index + 1]);
 	delete_line(argv, index);
 	delete_line(argv, index);
 }
@@ -81,6 +84,22 @@ static int	create_and_append_redir(t_redir **ret, t_redir **head,
 	return (1);
 }
 
+static int	process_redir_arg(t_redir **ret, t_redir **head, char **argv,
+	int i, t_shell *shell)
+{
+	if (argv[i + 1] && ft_strcmp(argv[i + 1], "$EMPTY") != 0 &&
+		argv[i + 1][0] != '\0')
+		return (create_and_append_redir(ret, head, argv, shell));
+	else if (argv[i + 1] && ft_strcmp(argv[i + 1], "$EMPTY") == 0)
+		return (create_and_append_redir(ret, head, argv, shell));
+	else if (argv[i + 1])
+	{
+		delete_line(argv, i);
+		delete_line(argv, i);
+	}
+	return (1);
+}
+
 t_redir	*apply_redirections(char **argv, t_shell *shell)
 {
 	t_redir	*ret;
@@ -92,9 +111,9 @@ t_redir	*apply_redirections(char **argv, t_shell *shell)
 	i = 0;
 	while (argv[i])
 	{
-		if (is_redirection(argv[i]) && argv[i + 1])
+		if (is_redirection(argv[i]))
 		{
-			if (!create_and_append_redir(&ret, &head, argv, shell))
+			if (!process_redir_arg(&ret, &head, argv, i, shell))
 				return (NULL);
 		}
 		else
