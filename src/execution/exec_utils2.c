@@ -91,7 +91,7 @@ void	verify_path(char **envp, char *path, t_tree *tree)
 
 void	free_exec_resources(char **envp, char *path)
 {
-	if (envp || envp[0])
+	if (envp)
 		free_split(envp);
 	if (path)
 		free(path);

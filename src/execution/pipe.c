@@ -19,6 +19,7 @@ static void	exec_pipe_left_child(t_tree *tree, t_shell *shell, int fd[2])
 	close(fd[0]);
 	dup2(fd[1], STDOUT_FILENO);
 	close(fd[1]);
+	close_fd_in_range(2, 1024);
 	exec_tree(tree->left, shell);
 	exit(shell->exit_status);
 }
@@ -30,6 +31,7 @@ static void	exec_pipe_right_child(t_tree *tree, t_shell *shell, int fd[2])
 	close(fd[1]);
 	dup2(fd[0], STDIN_FILENO);
 	close(fd[0]);
+	close_fd_in_range(2, 1024);
 	exec_tree(tree->right, shell);
 	exit(shell->exit_status);
 }

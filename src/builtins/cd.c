@@ -43,6 +43,28 @@ int	change_directory(char *target, char *oldcwd, t_shell *shell,
 	return (0);
 }
 
+static char	*handle_cd_target(char **argv, t_shell *shell, int *pp)
+{
+	char	*target;
+
+	if (!argv[1] || ft_strcmp(argv[1], "~") == 0)
+	{
+		target = get_env_value(shell->env_list, "HOME");
+		if (!target)
+			print_error(2, "minishell: cd: HOME not set\n");
+		return (target);
+	}
+	else if (ft_strcmp(argv[1], "-") == 0)
+	{
+		target = get_env_value(shell->env_list, "OLDPWD");
+		*pp = 1;
+		if (!target)
+			print_error(2, "minishell: cd: OLDPWD not set\n");
+		return (target);
+	}
+	return (argv[1]);
+}
+
 int	builtin_cd(char **argv, t_shell *shell)
 {
 	char	*target;
@@ -57,16 +79,8 @@ int	builtin_cd(char **argv, t_shell *shell)
 	}
 	if (getcwd(oldcwd, sizeof(oldcwd)) == NULL)
 		oldcwd[0] = '\0';
-	if (!argv[1] || ft_strcmp(argv[1], "~") == 0)
-		target = get_env_value(shell->env_list, "HOME");
-	else if (ft_strcmp(argv[1], "-") == 0)
-	{
-		target = get_env_value(shell->env_list, "OLDPWD");
-		print_path = 1;
-	}
-	else
-		target = argv[1];
+	target = handle_cd_target(argv, shell, &print_path);
 	if (!target)
-		return (printf("cd: HOME not set\n"), 1);
+		return (1);
 	return (change_directory(target, oldcwd, shell, print_path));
 }

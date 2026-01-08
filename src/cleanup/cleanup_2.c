@@ -34,7 +34,7 @@ void	free_split(char **argv)
 {
 	int	i;
 
-	if (!argv || !argv[0])
+	if (!argv)
 		return ;
 	i = 0;
 	while (argv[i])
